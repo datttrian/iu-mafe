@@ -1,0 +1,35 @@
+<style>
+
+body {
+  font-family: "Georgia";
+  text-align: justify;
+}
+
+p {
+  font-family: "Georgia";
+  text-indent: 30px;
+  color: black;
+  font-style: normal;
+}
+</style>
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Slide 27
+
+An investor agreed to pay an amount $C_0$ to buy a European put option with the underlying stock X, which was priced at ... VND per share on 01/02/2021. This option entitles the investor a right, but not an obligation, to sell a X share with price ... VND, at the end of the next 6 months. Suppose the risk-free interest rate is 8%.
+a. Write a R code to find the volatility of X stock price, using the historical price data over 5 years.
+b. Write a R code to estimate the parameters of the arithmetic Brownian motion governing the X price.
+c. Assume that X price follows an arithmetic Brownian motion, using the probabilistic approach, compute the fair value for $C_0$?
+d. Write a R code to compute $C_0$ using the closed-form pricing formula.
+
+# Slide 14
+
+An investor agreed to pay an amount $C_0$ to buy a European put option with the underlying X stock, which was priced at ... VND per share on 11/02/2021. This option entitles the investor a right, but not an obligation, to sell a SHS share with price ... VND, at the end of the next 6 months. Suppose the risk-free interest rate is 8%.
+a. Write a R code to find the volatility of SHS stock price, using the historical price data over 5 years.
+b. According to the Black-Scholes framework and using the probabilistic approach, compute the fair value for C0?
+c. Write a R code to compute $C_0$ using the Black-Scholes formula with both aBm and gBm approaches.
+d. Compare the obtained result with that of binomial pricing method and the Monte Carlo method.

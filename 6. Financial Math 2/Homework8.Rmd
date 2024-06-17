@@ -1,0 +1,78 @@
+<style>
+
+body {
+  font-family: "Georgia";
+  text-align: justify;
+}
+
+p {
+  font-family: "Georgia";
+  text-indent: 30px;
+  color: black;
+  font-style: normal;
+}
+</style>
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Slide 16
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t = 0.05 S_t \,dt + 0.3 S_t \,d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European digital call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+1) Use a 3-step CRR binomial tree method to compute the option price.
+2) Use the Monte Carlo method to compute the option price.
+3) Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ for the fair price of the option?
+
+# Slide 17
+
+An investor agreed to pay an amount $C_0$ to buy a European digital put option with the underlying MSN stock, which was priced at $82,300$ VND per share on 12/02/2019. This option entitles the investor to get a payoff $\$1$ if the price of MSN at the end of the next 6 months is lower than $96,000$ VND. Suppose the risk-free interest rate is $8\%$.
+
+a) Write a R code to find the volatility of MSN stock price, using the historical price data over 5 years.
+b) Write a R code to estimate the parameters of the geometric Brownian motion governing the MSN price.
+c) Using the above governed GBM and the probabilistic approach, compute the fair value for $C_0$??
+d) Write a R code to compute $C_0$ using the above pricing formula.
+e) Compare the obtained result with those of binomial pricing method and Monte Carlo pricing method.
+
+
+# Slide 18
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$\,d S_t = 0.05 \,dt + 0.3 \,dW_t^{\mathcal{Q}},$$
+where $\mathcal{Q}$ is a standard Brownian motion on a risk-neutral probability space, denoted by $(\omega, \mathcal{F}, \mathcal{Q})$. A European digital call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year),
+the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+1) Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ and then compute the fair price.
+2) Use the Monte Carlo method to compute the option price.
+
+# Slide 19
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$dS_t = 0.05dt + 0.3dW_t^Q,$$
+where $\mathcal{Q}$ is a standard Brownian motion on a risk-neutral probability space, denoted by $(\omega, \mathcal{F}, \mathcal{Q})$. A European digital put option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 7$.
+
+1) Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ and then compute the fair price.
+2) Use the Monte Carlo method to compute the option price.
+
+# Slide 20
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$dS_t = 0.05 \,dt + 0.3d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European digital call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+1) Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ and then compute the fair price.
+2) Use the Monte Carlo method to compute the option price.
+
+# Slide 21
+
+An investor agreed to pay an amount $C_0$ to buy a European digital put option with the underlying SSI stock, which was priced at $26,900$ VND per share on 12/02/2019. This option entitles the investor to get a payoff $\$1$ if the price of SSI at the end of the next 6 months is lower than $32,000$ VND. Suppose the risk-free interest rate is $8\%$.
+
+a) Write a R code to find the volatility of SSI stock price, using the historical price data over 5 years.
+b) Write a R code to estimate the parameters of the arithmetic Brownian motion governing the SSI price.
+c) Using the above governed arithmetic Brownian motion and the probabilistic approach, compute the fair value for $C_0$??
+d) Write a R code to compute $C_0$ using the above pricing formula.
+e) Compare the obtained result with that of Monte Carlo pricing method.

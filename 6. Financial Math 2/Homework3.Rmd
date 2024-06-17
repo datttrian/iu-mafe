@@ -1,0 +1,78 @@
+<style>
+
+body {
+  font-family: "Georgia";
+  text-align: justify;
+}
+
+p {
+  font-family: "Georgia";
+  text-indent: 30px;
+  color: black;
+  font-style: normal;
+}
+</style>
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Homework week 3
+
+## Slide 73
+
+Let X be a continuous uniform random variable with the probability density function 
+$$f(x)= \frac{1}{b-a}, \forall a\leq x \leq b$$
+
+1. Verify $\int_{a}^{b} f(x) \,dx=1$
+2. Compute the mean and variance of $X$.
+3. Compute the cumulative distribution function of $X$.
+  
+## Slide 74
+
+Let X be a exponential random variable with the probability density function 
+$$f(x)= \lambda e^{-\lambda x}, x>0,\lambda >0$$
+
+1. Verify $\int_{0}^{+\infty} f(x) \,dx=1$
+2. Compute the mean and variance of $X$.
+3. Compute the cumulative distribution function of $X$.
+
+## Slide 75
+
+Let X be a continuous log-normal random variable with the probability density function 
+$$f(x)= \frac{1}{x\sigma\sqrt{2\pi}}e^{-\frac{(\ln x - \mu)^2}{2 \sigma^2}}$$
+
+1. Verify $\int_{-\infty}^{+\infty} f(x) \,dx=1$
+2. Compute the mean and variance of $X$.
+
+## Slide 94  
+
+Find the differential form of the following stochastic processes:  
+
+1. $M_t=\displaystyle\int_0^t3W_s^2\,ds$  
+2. $M_t=\displaystyle\int_0^t3W_s\,dWs$  
+3. $X_t=3+\displaystyle\int_0^t3s\,dW_s+\displaystyle\int_0^t5W_s^2\,ds$  
+
+## Slide 95  
+
+Find the integral form of the following stochastic processes:  
+
+1. $dX_t=5\,dt+3\,dW_t$  
+2. $dX_t=4X_t\,dt+3X_t\,dWt$  
+3. $d(W_t^3)=3W_t^2\,dW_t+3W_tdt$  
+
+## Slide 96  
+Find the integral form form of the following stochastic processes:
+
+- Arithmetic Brownian motion: $dX_t = 5\,dt + 3\,dW_t$  
+- Geometric Brownian motion: $dX_t = 5X_t\,dt + 5X_t\,dW_t$  
+
+## Slide 97  
+
+For one-variable functions, their second-order Taylor series expansions have the form  
+$$df(x)=f'(x)\,dx+\frac{1}{2}f''(x)\,dx^2$$  
+
+- Find the second-order Taylor series expansion of $f(x)=e^x$  
+- Find the second-order Taylor series expansion of $f(x)=sinx$  
+- Find the second-order Taylor series expansion of $f(x)=lnx,\,x>0$  

@@ -1,0 +1,167 @@
+<style>
+
+body {
+  font-family: "Georgia";
+  text-align: justify;
+}
+
+p {
+  font-family: "Georgia";
+  text-indent: 30px;
+  color: black;
+  font-style: normal;
+}
+</style>
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Slide 32
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t = 0.05 S_t \,d t + 0.3 S_t \,d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\omega,\mathcal{F},\mathcal{P})$. Asset-or-nothing call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$.
+
+## Question 1 
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of t,T and St for the fair price of the option? 
+
+## Question 2
+
+Compute the fair price when t = 0.5,T = 1,St = 9.
+
+## Question 3
+
+Write R code to implement the formula derived in the question i)
+
+## Question 4 
+
+Write R code to compute the option price using binomial method.
+
+## Question 5 
+
+Write R code to compute the option price using Monte Carlo method.
+
+# Slide 33
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$ \,d S_t = 0.05 S_t \,dt + 0.3 S_t \,d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\omega,\mathcal{F},\mathcal{P})$. Asset-or-nothing put option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 7$.
+
+
+
+# Slide 34
+
+Suppose the asset price process $(S_t)+{t \geq 0}$ follows an arithmetic Brownian motion:
+$$ \,d S_t = 0.05 \,d t + 0.3 \,d W_t^Q,$$
+where $W_t^Q$ is a standard Brownian motion on a risk-neutral probability space, denoted by $(\omega,\mathcal{F},\mathcal{Q})$. Asset-or-nothing call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$.
+
+## Question 1 
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ for the fair price of the option? 
+
+## Question 2 
+
+Compute the fair price when $t = 0.5$, $T = 1$, $S_t = 9$.
+
+# Slide 35
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$ \,d S_t = 0.05 \,d t + 0.3 \,d W_t^Q,$$
+where $W_t^Q$ is a standard Brownian motion on a risk-neutral probability space, denoted by $(\omega,\mathcal{F},\mathcal{P})$. Asset-or-nothing put option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 7$.
+
+## Question 1 
+
+Use the Monte Carlo method to compute the option price.
+
+## Question 2
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of t,T and St and then compute the fair price.
+
+# Slide 36
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$\,d S_t = 0.05 \,d t + 0.3 \,d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\omega,\mathcal{F},\mathcal{P})$. Asset-or-nothing call option parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$.
+
+## Question 1
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ for the fair price of the option? 
+
+## Question 2
+
+Compute the fair price when $t = 0.5$, $T = 1$, $S_t = 9$.
+
+# Slide 37
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$\,d S_t = 0.05 \,d t + 0.3 \,d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\omega,\mathcal{F},\mathcal{P})$. Asset-or-nothing put option parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$.
+
+## Question 1
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ for the fair price of the option? 
+
+## Question 2
+
+Compute the fair price when $t = 0.5$, $T = 1$, $S_t = 7$.
+
+# Slide 38
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t = 0.05 S_t \,dt + 0.3 S_t \, d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega, \mathcal{F}, \mathcal{P})$. Consider a European exotic option written on the stock that has pay-off 
+$$\phi(S_T) = \ln \left( \frac{S_T}{S_0} \right) − K$$
+at expiry, where $K$ is a constant and the current stock price $S_0 = 7$. The parameters are
+$K = 1$, maturity time $T > t$ (year), the risk-free interest rate is
+$r =0.03$, $t =0.5$, $T = 1$, $S_t =9$.
+
+## Question 1 
+
+Using the 3-step CRR model to compute the option price.
+
+## Question 2 
+
+Use the Monte Carlo method to compute the option price.
+
+## Question 3 
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ and then compute the fair price.
+
+# Slide 39
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t = 0.05 S_t \,dt + 0.3 S_t \, d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega, \mathcal{F}, \mathcal{P})$. Consider a European exotic option written on the stock that has pay-off 
+$$\phi(S_T) = \left( \ln \left( \frac{S_T}{S_0} \right) − K \right)^2$$
+at expiry, where $K$ is a constant and the current stock price $S_0 = 7$. The parameters are
+$K = 1$, maturity time $T > t$ (year), the risk-free interest rate is
+$r =0.03$, $t =0.5$, $T = 1$, $S_t =9$.
+
+## Question 1 
+
+Using the 3-step CRR model to compute the option price.
+
+## Question 2 
+
+Use the Monte Carlo method to compute the option price.
+
+## Question 3 
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ and then compute the fair price.
+
+# Slide 40
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t = 0.05 S_t \,dt+0.3 S_t \,d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega, \mathcal{F}, \mathcal{P})$. Consider a European exotic option written on the stock that has pay-off $\Phi(S_T)=S_T − K$  at expiry, where $K$ is a constant and the current stock price $S_0 = 7$. The parameters are $K = 10$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$.
+
+## Question 1 
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ for the fair price of the option? 
+
+## Question 2 
+
+Compute the fair price when $t = 0.5$, $T = 1$, $S_t = 9$.

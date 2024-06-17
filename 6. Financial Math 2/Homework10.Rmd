@@ -1,0 +1,130 @@
+<style>
+
+body {
+  font-family: "Georgia";
+  text-align: justify;
+}
+
+p {
+  font-family: "Georgia";
+  text-indent: 30px;
+  color: black;
+  font-style: normal;
+}
+</style>
+
+```{r setup, include = FALSE}
+library(tidyverse)
+```
+
+# Slide 70
+
+Compute the following integrals:
+
+## Question 1 
+
+$$\int_0^1 \frac{2}{\sqrt{s^3}} e^{-\frac{9s^2+4}{2s}} \,ds$$
+
+## Question 2 
+
+$$\int_0^1 \frac{3}{\sqrt{s^3}} e^{-\frac{16s^2+9}{2s}} \,ds$$
+
+# Slide 71
+
+Compute the following limits:
+
+## Question 1
+
+$$\lim_{s \rightarrow 0} \frac{2-3s}{\sqrt{s}}$$
+
+## Question 2
+
+$$\lim_{s \rightarrow 0} \frac{-2-3s}{\sqrt{s}}$$
+
+# Slide 72
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t =0.15 S_t \,dt + 0.4 S_t \,d W_t^{\mathcal{P}},$$
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega,\mathcal{F},\mathcal{P})$. An American digital call option written on the stock with parameters: exercise price $K = 9$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.1$, $t = 0.5$, $T = 1$, $S_t = 8$.
+
+## Question 1
+
+Using the 3-step CRR model to compute the option price.
+
+## Question 2
+
+Use the Monte Carlo method to compute the option price.
+
+## Question 3 
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ and then compute the fair price.
+
+# Slide 73
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t =0.15 S_t \,dt + 0.4 S_t \,d W_t^{\mathcal{P}},$$
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega,\mathcal{F},\mathcal{P})$. An American digital put option written on the stock with parameters: exercise price $K = 10$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.1$, $t = 0.5$, $T = 1$, $S_t = 12$.
+
+## Question 1 
+
+Using the 3-step CRR model to compute the option price.
+
+## Question 2 
+
+Use the Monte Carlo method to compute the option price.
+
+## Question 3 
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ and then compute the fair price.
+
+# Slide 74
+
+An investor agreed to pay an amount $C_0$ to buy a European digital put option with the underlying VND stock, which was priced at 16, 800 VND per share on 11/02/2019. This option entitles the investor to get a payoff $\$1$ at any time, during the next 6 months, the price of VND is lower than 13, 900 VND. Suppose the risk-free interest rate is $8\%$.
+
+## Question a 
+
+Write a R code to find the volatility of VND stock price, using the historical price data over 5 years.
+
+## Question b 
+
+Write a R code to estimate the parameters of the geometric Brownian motion governing the VND price.
+
+## Question c 
+
+Using the above governed geometric Brownian motion and the probabilistic approach, compute the fair value for C0??
+
+## Question d 
+
+Write a R code to compute $C_0$ using the above pricing formula.
+
+## Question e 
+
+Compare the obtained result with those of Monte Carlo pricing method and Binomial method.
+
+# Slide 75
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t =0.05 \,dt + 0.3 \,d W_t^{\mathcal{P}},$$
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega,\mathcal{F},\mathcal{P})$. An American digital call option written on the stock with parameters: exercise price $K = 10$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+## Question 1 
+
+Use the Monte Carlo method to compute the option price.
+
+## Question 2 
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ and then compute the fair price.
+
+# Slide 76
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t =0.05 \,dt + 0.3 \,d W_t^{\mathcal{P}},$$
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega,\mathcal{F},\mathcal{P})$. An American digital put option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 10$.
+
+## Question 1 
+
+Use the Monte Carlo method to compute the option price.
+
+## Question 2 
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ and then compute the fair price.

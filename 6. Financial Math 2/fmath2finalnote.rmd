@@ -1,0 +1,1809 @@
+<style>
+
+body {
+  font-family: "Georgia";
+  text-align: justify;
+}
+
+p {
+  font-family: "Georgia";
+  text-indent: 30px;
+  color: black;
+  font-style: normal;
+}
+</style>
+
+
+```{r setup, include = FALSE}
+library(tidyverse)
+```
+
+# GBM Probability Density Function
+
+Suppose the stochastic process of the asset price $S_t$ follows a geometric
+Brownian motion:
+$$\,d S_t = 0.2 S_t \,dt + 0.3 S_t \,dW_t^\mathcal{P}$$
+where $W_t^P$
+is a standard Brownian motion on the real world probability
+space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European call option written on the stock
+with parameters: exercise price $K = 15$, maturity time $T=2$, $t=0.5$ (year), the
+risk-free interest rate is $r = 0.06$, $S_t=12$.
+
+Let $\widetilde W_t = W_t + \theta t$, with $\theta$ being a constant is an adapted process with respect to the filtration $()\mathcal{F}_t)_{t \geq 0}$. Find $\theta$ such that the discounted $(e^{−0.07t}S_t)_{t \ge 0}$ is a martingale process with respect to $\widetilde W_t$.
+
+Derive the Black-Scholes-Merton formula and then compute the option price.
+
+>Let $\mathcal{P}$ and $\mathcal{Q}$ be the physical and risk neutral measures on $(\omega,\mathcal{F})$ respectively. Let $\{W_t^\mathcal{P}\}_{t \geq 0}$ be the standard Brownian motion on $\mathcal{P}$. For $\{S_t\}_{t \geq 0}$ be the process of asset price, we have:
+$$dSt = \mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}$$
+
+>With $f(t,x)=e^{-rt}x$ then we can calculate:
+$$\begin{align*} 
+f_t&=-re^{-rt}x \\
+f_x&=e^{-rt} \\
+f_{tt}&=r^2e^{-rt}x \\
+f_{xx}&=0 \\
+f_{tx}&=-re^{-rt}
+\end{align*}$$
+
+>Aply Ito-Doeblin formula, we have:
+$$\begin{align*}
+d(e^{-rt}S_t) &= -re^{-rt}S_t\,dt+e^{-rt}\,dS_t -re^{-rt}\,dt \,dS_t \\
+&= -re^{-rt}S_t\,dt+e^{-rt}(\mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}) -re^{-rt}\,dt(\mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}) \\
+&= e^{-rt}S_t[(\mu-r) \,dt+\sigma \,d W_t^{\mathcal{P}}] -\mu re^{-rt}St\,dt^2 + \sigma S_t \,dt\,dW_t^\mathcal{P})\\
+&= e^{-rt}S_t[\mu-r \,dt+\sigma (\,d W_t^{\mathcal{Q}}-\theta_t) \,dt] \\
+&= e^{-rt}S_t[(\mu-r-\sigma \theta_t) \,dt+\sigma \,d W_t^{\mathcal{Q}} \,dt]
+\end{align*}$$
+
+>In order to have the process $\{e^{−rt}S_t\}_{t \geq 0}$ be the martigale process, we choose $\theta_t$ such that:
+$$\mu-r-\sigma \theta_t=0 \rightarrow \theta_t=\frac{\mu-r}{\sigma} $$
+then $$E^\mathcal{P}[e^{\frac{1}{2} \int_0^T \theta_t^2\,dt}]<\infty$$
+
+>By the Girsanov’s theorem, there is a risk neutral measure $\mathcal{Q}$ defined by the Radon-Nykodym $$E \left[\frac{\,d \mathcal{Q}}{\,d \mathcal{P}} |\mathcal{F}_t\right]=Z_t=e^{-\int_0^t \theta_s \,d W_s^\mathcal{P}-\frac{1}{2} \theta_s^2 \,ds}$$ such that $W_t^\mathcal{Q}=W_t^\mathcal{P}+\int_0^t\theta_s \,ds$  
+is the standard Brownian motion under $\mathcal{Q}$.
+$$W_t^\mathcal{Q}=W_t^\mathcal{P}+\int_0^t\theta_s \,ds \\
+\rightarrow \,dW_t^\mathcal{Q}=\,dW_t^\mathcal{P}+\theta_t\,dt$$
+
+>Since $e^{-rt}S_t$ is a martingale under $\mathcal{Q}$ and $\mathcal{Q}$ is an equivalent martingale measure to $\mathcal{P}$, we can write:
+$$\begin{align*}
+\,dS_t &= \mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P} \\
+&=\mu S_t \,dt + \sigma S_t (\,dW_t^\mathcal{Q}-\theta_t \,dt) \\
+&=\mu S_t \,dt + \sigma S_t (\,dW_t^\mathcal{Q}-\frac{\mu-r}{\sigma} \,dt) \\
+&=\left(\mu-\sigma\cdot\frac{\mu-r}{\sigma} \right)S_t \,dt + \sigma S_t \,dW_t^\mathcal{Q} \\
+&=rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q} \\
+\end{align*}$$
+
+>Let $Y_t=\ln S_t$ and $f(t,x)=\ln x$, we have:
+$$\begin{align*}
+f_t&=0 \\
+f_x&=\frac{1}{x} \\
+f_{tt}&=0 \\
+f_{xx}&=-\frac{1}{x^2} \\
+f_{tx}&=0 \\
+\end{align*}$$
+
+>Applying Ito Doeblin formula, we have:
+$$\begin{align*}
+\,d(Y_t)&=\frac{1}{S_t} \,dS_t-\frac{1}{2}\frac{1}{S_t^2}\,dS_t^2 \\
+&=\frac{1}{S_t} (rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q})-\frac{1}{2}\frac{1}{S_t^2}(rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q})^2 \\
+&=(r-\frac{1}{2} \cdot \sigma^2)\,dt + \sigma \,dW_t^\mathcal{Q} \\
+\,d(\ln S_t)&=(r-\frac{1}{2} \cdot \sigma^2)\,dt + \sigma \,dW_t^\mathcal{Q} \\
+ \int_t^T \,d(\ln S_s)&=\int_t^T(r-\frac{1}{2} \cdot \sigma^2)\,ds + \int_t^T\sigma \,dW_s^\mathcal{Q} \\
+\ln \left( \frac{S_T}{S_t} \right)&=(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^\mathcal{Q}-W_t^\mathcal{Q}) \\
+ S_T&=e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}
+\end{align*}$$
+
+>Let $\mathcal{P}$ and $\mathcal{Q}$ be the physical and risk neutral measures on $(\omega,\mathcal{F})$ respectively. Let $\{W_t^\mathcal{P}\}_{t \geq 0}$ be the standard Brownian motion on $\mathcal{P}$. For $\{S_t\}_{t \geq 0}$ be the process of asset price, we have:
+$$dSt = \mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}$$
+
+>With $f(t,x)=e^{-rt}x$ then we can calculate:
+$$\begin{align*} 
+f_t&=-re^{-rt}x \\
+f_x&=e^{-rt} \\
+f_{tt}&=r^2e^{-rt}x \\
+f_{xx}&=0 \\
+f_{tx}&=-re^{-rt}
+\end{align*}$$
+
+>Aply Ito-Doeblin formula, we have:
+$$\begin{align*}
+d(e^{-rt}S_t) &= -re^{-rt}S_t\,dt+e^{-rt}\,dS_t -re^{-rt}\,dt \,dS_t \\
+&= -re^{-rt}S_t\,dt+e^{-rt}(\mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}) -re^{-rt}\,dt(\mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}) \\
+&= e^{-rt}S_t[(\mu-r) \,dt+\sigma \,d W_t^{\mathcal{P}}] -\mu re^{-rt}St\,dt^2 + \sigma S_t \,dt\,dW_t^\mathcal{P})\\
+&= e^{-rt}S_t[\mu-r \,dt+\sigma (\,d W_t^{\mathcal{Q}}-\theta_t) \,dt] \\
+&= e^{-rt}S_t[(\mu-r-\sigma \theta_t) \,dt+\sigma \,d W_t^{\mathcal{Q}} \,dt]
+\end{align*}$$
+
+>In order to have the process $\{e^{−rt}S_t\}_{t \geq 0}$ be the martigale process, we choose $\theta_t$ such that:
+$$\mu-r-\sigma \theta_t=0 \rightarrow \theta_t=\frac{\mu-r}{\sigma} $$
+then $$E^\mathcal{P}[e^{\frac{1}{2} \int_0^T \theta_t^2\,dt}]<\infty$$
+
+>By the Girsanov’s theorem, there is a risk neutral measure $\mathcal{Q}$ defined by the Radon-Nykodym $$E \left[\frac{\,d \mathcal{Q}}{\,d \mathcal{P}} |\mathcal{F}_t\right]=Z_t=e^{-\int_0^t \theta_s \,d W_s^\mathcal{P}-\frac{1}{2} \theta_s^2 \,ds}$$ such that $W_t^\mathcal{Q}=W_t^\mathcal{P}+\int_0^t\theta_s \,ds$  
+is the standard Brownian motion under $\mathcal{Q}$.
+$$W_t^\mathcal{Q}=W_t^\mathcal{P}+\int_0^t\theta_s \,ds \\
+\rightarrow \,dW_t^\mathcal{Q}=\,dW_t^\mathcal{P}+\theta_t\,dt$$
+
+>Since $e^{-rt}S_t$ is a martingale under $\mathcal{Q}$ and $\mathcal{Q}$ is an equivalent martingale measure to $\mathcal{P}$, we can write:
+$$\begin{align*}
+\,dS_t &= \mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P} \\
+&=\mu S_t \,dt + \sigma S_t (\,dW_t^\mathcal{Q}-\theta_t \,dt) \\
+&=\mu S_t \,dt + \sigma S_t (\,dW_t^\mathcal{Q}-\frac{\mu-r}{\sigma} \,dt) \\
+&=\left(\mu-\sigma\cdot\frac{\mu-r}{\sigma} \right)S_t \,dt + \sigma S_t \,dW_t^\mathcal{Q} \\
+&=rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q} \\
+\end{align*}$$
+
+>Let $Y_t=\ln S_t$ and $f(t,x)=\ln x$, we have:
+$$\begin{align*}
+f_t&=0 \\
+f_x&=\frac{1}{x} \\
+f_{tt}&=0 \\
+f_{xx}&=-\frac{1}{x^2} \\
+f_{tx}&=0 \\
+\end{align*}$$
+
+>Applying Ito Doeblin formula, we have:
+$$\begin{align*}
+\,d(Y_t)&=\frac{1}{S_t} \,dS_t-\frac{1}{2}\frac{1}{S_t^2}\,dS_t^2 \\
+&=\frac{1}{S_t} (rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q})-\frac{1}{2}\frac{1}{S_t^2}(rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q})^2 \\
+&=(r-\frac{1}{2} \cdot \sigma^2)\,dt + \sigma \,dW_t^\mathcal{Q} \\
+\,d(\ln S_t)&=(r-\frac{1}{2} \cdot \sigma^2)\,dt + \sigma \,dW_t^\mathcal{Q} \\
+ \int_t^T \,d(\ln S_s)&=\int_t^T(r-\frac{1}{2} \cdot \sigma^2)\,ds + \int_t^T\sigma \,dW_s^\mathcal{Q} \\
+\ln \left( \frac{S_T}{S_t} \right)&=(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^\mathcal{Q}-W_t^\mathcal{Q}) \\
+ S_T&=e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}
+\end{align*}$$
+
+>We have
+$$\begin{align*}
+\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}}) &\sim \mathcal{N}(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t),\sigma^2(T-t)) \\
+e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})} &\sim \ln \mathcal{N}(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t),\sigma^2(T-t)) \\
+ (S_T|S_t) &\sim \ln \mathcal{N}(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t),\sigma^2(T-t)) \\
+\end{align*}$$
+
+>The probability density function of $(S_T|S_t)$ is
+$$f_{S_T|S_t}(x)=\frac{1}{\sigma x\sqrt{2\pi(T-t)}}e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} $$
+
+
+# ABM Probability Density Function
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+
+$$\,d S_t = 0.05 \,dt + 0.3 \,d W_t^{\mathcal{P}},$$
+
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European digital call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+>Let $W_t^Q = W_t^P + \int_0^t \theta_s \,d s$, with $(\theta_t)_{t \geq 0}$ is an adapted process with $(\mathcal{F}_t)_{t \geq 0}$.
+$$\begin{align*}
+d(e^{−rt}S_t) &= −re^{−rt}S_t \,dt + e^{−rt}\,d S_t \\
+&= −re^{−rt}S_t \,dt + e^{−rt}(\mu \,dt + \sigma \,dW_t^P) \\
+&= e^{−rt}((\mu − rS_t) \,dt + \sigma (W_t^Q - \theta_t \,d t)) \\
+&= e^{−rt}((\mu − rS_t -\sigma\theta_t) \,dt + \sigma W_t^Q) \\
+\end{align*}$$
+
+>We choose $\theta_t = \frac{\mu -r S_t}{\sigma}$
+then $E^{\mathcal{P}} \left(e^{\frac{1}{2} \int_0^T \theta_t^2 \,dt} \right)< \infty$ and $Z_t = e^{\int_0^t \theta_s \,d W_s- \frac{1}{2} \int_0^t \theta_s^2 \,ds}$ is a positive martingale.
+From Girsanov’s theorem, there exist a risk-neutral measure $\mathcal{Q}$ defined by $E\left[\frac{\,d \mathcal{Q}}{\,d \mathcal{P}} | \mathcal{F}_t \right] = Z_t$ such that $W_t^{\mathcal{Q}}$ is a Standard Brownian motion under $\mathcal{Q}$.
+As $d(e^{−rt}S_t) = \sigma e^{−rt} \,d W_t^{\mathcal{Q}}$, $e^{−rt}S_t$ is a martingale under $\mathcal{Q}$ and $\mathcal{Q}$ is an equivalent martingale measure to $\mathcal{P}$
+
+>By taking the integral both sides of the above equality from t to T, we
+obtain:
+$$\begin{align*}
+\int_t^T d(e^{−rt}S_t) &= \int_t^T\sigma e^{−ru} \,d W_t^{\mathcal{Q}} \\
+e^{−rt} S_T - e^{−rt} S_t &= \int_t^T\sigma e^{−ru} \,d W_t^{\mathcal{Q}} \\
+S_T&= e^{r(T-t)} S_t + \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}} \\
+& \sim \mathcal{N} \left(e^{r(T-t)} S_t ,  \left( \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}}\right)^2 \right) \\
+& \sim \mathcal{N} \left( e^{r(T-t)} S_t ,  \frac{\sigma^2}{2r}(e^{2r(T-t)}-1)  \right)
+\end{align*}$$
+
+>The probability density function of $S_T|S_t$ can be written as: 
+$$f_{S_T|s_t}(y) = \frac{1}{v \sqrt{2\pi}} e^{-\frac{(y-m)^2}{2v^2}}$$
+where $m=e^{r(T-t)} S_t$ and $v^2=\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)$
+
+
+# Vanilla - GBM
+
+## Call
+
+Suppose the stochastic process of the asset price $S_t$ follows a geometric
+Brownian motion:
+$$\,d S_t = 0.2 S_t \,dt + 0.3 S_t \,dW_t^\mathcal{P}$$
+where $W_t^P$
+is a standard Brownian motion on the real world probability
+space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European call option written on the stock
+with parameters: exercise price $K = 15$, maturity time $T=2$, $t=0.5$ (year), the
+risk-free interest rate is $r = 0.06$, $S_t=12$.
+
+Let $\widetilde W_t = W_t + \theta t$, with $\theta$ being a constant is an adapted process with respect to the filtration $()\mathcal{F}_t)_{t \geq 0}$. Find $\theta$ such that the discounted $(e^{−0.07t}S_t)_{t \ge 0}$ is a martingale process with respect to $\widetilde W_t$.
+
+Derive the Black-Scholes-Merton formula and then compute the option price.
+
+>Let $\mathcal{P}$ and $\mathcal{Q}$ be the physical and risk neutral measures on $(\omega,\mathcal{F})$ respectively. Let $\{W_t^\mathcal{P}\}_{t \geq 0}$ be the standard Brownian motion on $\mathcal{P}$. For $\{S_t\}_{t \geq 0}$ be the process of asset price, we have:
+$$dSt = \mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}$$
+
+>With $f(t,x)=e^{-rt}x$ then we can calculate:
+$$\begin{align*} 
+f_t&=-re^{-rt}x \\
+f_x&=e^{-rt} \\
+f_{tt}&=r^2e^{-rt}x \\
+f_{xx}&=0 \\
+f_{tx}&=-re^{-rt}
+\end{align*}$$
+
+>Aply Ito-Doeblin formula, we have:
+$$\begin{align*}
+d(e^{-rt}S_t) &= -re^{-rt}S_t\,dt+e^{-rt}\,dS_t -re^{-rt}\,dt \,dS_t \\
+&= -re^{-rt}S_t\,dt+e^{-rt}(\mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}) -re^{-rt}\,dt(\mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}) \\
+&= e^{-rt}S_t[(\mu-r) \,dt+\sigma \,d W_t^{\mathcal{P}}] -\mu re^{-rt}St\,dt^2 + \sigma S_t \,dt\,dW_t^\mathcal{P})\\
+&= e^{-rt}S_t[\mu-r \,dt+\sigma (\,d W_t^{\mathcal{Q}}-\theta_t) \,dt] \\
+&= e^{-rt}S_t[(\mu-r-\sigma \theta_t) \,dt+\sigma \,d W_t^{\mathcal{Q}} \,dt]
+\end{align*}$$
+
+>In order to have the process $\{e^{−rt}S_t\}_{t \geq 0}$ be the martigale process, we choose $\theta_t$ such that:
+$$\mu-r-\sigma \theta_t=0 \rightarrow \theta_t=\frac{\mu-r}{\sigma} $$
+then $$E^\mathcal{P}[e^{\frac{1}{2} \int_0^T \theta_t^2\,dt}]<\infty$$
+
+>By the Girsanov’s theorem, there is a risk neutral measure $\mathcal{Q}$ defined by the Radon-Nykodym $$E \left[\frac{\,d \mathcal{Q}}{\,d \mathcal{P}} |\mathcal{F}_t\right]=Z_t=e^{-\int_0^t \theta_s \,d W_s^\mathcal{P}-\frac{1}{2} \theta_s^2 \,ds}$$ such that $W_t^\mathcal{Q}=W_t^\mathcal{P}+\int_0^t\theta_s \,ds$  
+is the standard Brownian motion under $\mathcal{Q}$.
+$$W_t^\mathcal{Q}=W_t^\mathcal{P}+\int_0^t\theta_s \,ds \\
+\rightarrow \,dW_t^\mathcal{Q}=\,dW_t^\mathcal{P}+\theta_t\,dt$$
+
+>Since $e^{-rt}S_t$ is a martingale under $\mathcal{Q}$ and $\mathcal{Q}$ is an equivalent martingale measure to $\mathcal{P}$, we can write:
+$$\begin{align*}
+\,dS_t &= \mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P} \\
+&=\mu S_t \,dt + \sigma S_t (\,dW_t^\mathcal{Q}-\theta_t \,dt) \\
+&=\mu S_t \,dt + \sigma S_t (\,dW_t^\mathcal{Q}-\frac{\mu-r}{\sigma} \,dt) \\
+&=\left(\mu-\sigma\cdot\frac{\mu-r}{\sigma} \right)S_t \,dt + \sigma S_t \,dW_t^\mathcal{Q} \\
+&=rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q} \\
+\end{align*}$$
+
+>Let $Y_t=\ln S_t$ and $f(t,x)=\ln x$, we have:
+$$\begin{align*}
+f_t&=0 \\
+f_x&=\frac{1}{x} \\
+f_{tt}&=0 \\
+f_{xx}&=-\frac{1}{x^2} \\
+f_{tx}&=0 \\
+\end{align*}$$
+
+>Applying Ito Doeblin formula, we have:
+$$\begin{align*}
+\,d(Y_t)&=\frac{1}{S_t} \,dS_t-\frac{1}{2}\frac{1}{S_t^2}\,dS_t^2 \\
+&=\frac{1}{S_t} (rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q})-\frac{1}{2}\frac{1}{S_t^2}(rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q})^2 \\
+&=(r-\frac{1}{2} \cdot \sigma^2)\,dt + \sigma \,dW_t^\mathcal{Q} \\
+\,d(\ln S_t)&=(r-\frac{1}{2} \cdot \sigma^2)\,dt + \sigma \,dW_t^\mathcal{Q} \\
+ \int_t^T \,d(\ln S_s)&=\int_t^T(r-\frac{1}{2} \cdot \sigma^2)\,ds + \int_t^T\sigma \,dW_s^\mathcal{Q} \\
+\ln \left( \frac{S_T}{S_t} \right)&=(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^\mathcal{Q}-W_t^\mathcal{Q}) \\
+ S_T&=e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}
+\end{align*}$$
+
+>Let $\mathcal{P}$ and $\mathcal{Q}$ be the physical and risk neutral measures on $(\omega,\mathcal{F})$ respectively. Let $\{W_t^\mathcal{P}\}_{t \geq 0}$ be the standard Brownian motion on $\mathcal{P}$. For $\{S_t\}_{t \geq 0}$ be the process of asset price, we have:
+$$dSt = \mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}$$
+
+>With $f(t,x)=e^{-rt}x$ then we can calculate:
+$$\begin{align*} 
+f_t&=-re^{-rt}x \\
+f_x&=e^{-rt} \\
+f_{tt}&=r^2e^{-rt}x \\
+f_{xx}&=0 \\
+f_{tx}&=-re^{-rt}
+\end{align*}$$
+
+>Aply Ito-Doeblin formula, we have:
+$$\begin{align*}
+d(e^{-rt}S_t) &= -re^{-rt}S_t\,dt+e^{-rt}\,dS_t -re^{-rt}\,dt \,dS_t \\
+&= -re^{-rt}S_t\,dt+e^{-rt}(\mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}) -re^{-rt}\,dt(\mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P}) \\
+&= e^{-rt}S_t[(\mu-r) \,dt+\sigma \,d W_t^{\mathcal{P}}] -\mu re^{-rt}St\,dt^2 + \sigma S_t \,dt\,dW_t^\mathcal{P})\\
+&= e^{-rt}S_t[\mu-r \,dt+\sigma (\,d W_t^{\mathcal{Q}}-\theta_t) \,dt] \\
+&= e^{-rt}S_t[(\mu-r-\sigma \theta_t) \,dt+\sigma \,d W_t^{\mathcal{Q}} \,dt]
+\end{align*}$$
+
+>In order to have the process $\{e^{−rt}S_t\}_{t \geq 0}$ be the martigale process, we choose $\theta_t$ such that:
+$$\mu-r-\sigma \theta_t=0 \rightarrow \theta_t=\frac{\mu-r}{\sigma} $$
+then $$E^\mathcal{P}[e^{\frac{1}{2} \int_0^T \theta_t^2\,dt}]<\infty$$
+
+>By the Girsanov’s theorem, there is a risk neutral measure $\mathcal{Q}$ defined by the Radon-Nykodym $$E \left[\frac{\,d \mathcal{Q}}{\,d \mathcal{P}} |\mathcal{F}_t\right]=Z_t=e^{-\int_0^t \theta_s \,d W_s^\mathcal{P}-\frac{1}{2} \theta_s^2 \,ds}$$ such that $W_t^\mathcal{Q}=W_t^\mathcal{P}+\int_0^t\theta_s \,ds$  
+is the standard Brownian motion under $\mathcal{Q}$.
+$$W_t^\mathcal{Q}=W_t^\mathcal{P}+\int_0^t\theta_s \,ds \\
+\rightarrow \,dW_t^\mathcal{Q}=\,dW_t^\mathcal{P}+\theta_t\,dt$$
+
+>Since $e^{-rt}S_t$ is a martingale under $\mathcal{Q}$ and $\mathcal{Q}$ is an equivalent martingale measure to $\mathcal{P}$, we can write:
+$$\begin{align*}
+\,dS_t &= \mu S_t \,dt + \sigma S_t \,dW_t^\mathcal{P} \\
+&=\mu S_t \,dt + \sigma S_t (\,dW_t^\mathcal{Q}-\theta_t \,dt) \\
+&=\mu S_t \,dt + \sigma S_t (\,dW_t^\mathcal{Q}-\frac{\mu-r}{\sigma} \,dt) \\
+&=\left(\mu-\sigma\cdot\frac{\mu-r}{\sigma} \right)S_t \,dt + \sigma S_t \,dW_t^\mathcal{Q} \\
+&=rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q} \\
+\end{align*}$$
+
+>Let $Y_t=\ln S_t$ and $f(t,x)=\ln x$, we have:
+$$\begin{align*}
+f_t&=0 \\
+f_x&=\frac{1}{x} \\
+f_{tt}&=0 \\
+f_{xx}&=-\frac{1}{x^2} \\
+f_{tx}&=0 \\
+\end{align*}$$
+
+>Applying Ito Doeblin formula, we have:
+$$\begin{align*}
+\,d(Y_t)&=\frac{1}{S_t} \,dS_t-\frac{1}{2}\frac{1}{S_t^2}\,dS_t^2 \\
+&=\frac{1}{S_t} (rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q})-\frac{1}{2}\frac{1}{S_t^2}(rS_t \,dt + \sigma S_t \,dW_t^\mathcal{Q})^2 \\
+&=(r-\frac{1}{2} \cdot \sigma^2)\,dt + \sigma \,dW_t^\mathcal{Q} \\
+\,d(\ln S_t)&=(r-\frac{1}{2} \cdot \sigma^2)\,dt + \sigma \,dW_t^\mathcal{Q} \\
+ \int_t^T \,d(\ln S_s)&=\int_t^T(r-\frac{1}{2} \cdot \sigma^2)\,ds + \int_t^T\sigma \,dW_s^\mathcal{Q} \\
+\ln \left( \frac{S_T}{S_t} \right)&=(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^\mathcal{Q}-W_t^\mathcal{Q}) \\
+ S_T&=e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}
+\end{align*}$$
+
+>We have
+$$\begin{align*}
+\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}}) &\sim \mathcal{N}(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t),\sigma^2(T-t)) \\
+e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})} &\sim \ln \mathcal{N}(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t),\sigma^2(T-t)) \\
+ (S_T|S_t) &\sim \ln \mathcal{N}(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t),\sigma^2(T-t)) \\
+\end{align*}$$
+
+>The probability density function of $(S_T|S_t)$ is
+$$f_{S_T|S_t}(x)=\frac{1}{\sigma x\sqrt{2\pi(T-t)}}e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} $$
+
+>From Feyman-Kac formula we have:
+$$ C(S_t,t)=e^{-r(T-t)} \mathbb{E}^\mathcal{Q}[\max(S_T-K,0)|\mathcal{F}_t] $$
+
+>Applying the moment generating function, we have:
+$$\begin{align*} 
+C(S_t,t)&=e^{-r(T-t)}\int_{-\infty}^\infty \max(x-K,0) f_{S_T|S_t}(x) \,dx \\
+&=e^{-r(T-t)}\int_K^\infty (x-K) \frac{1}{\sigma x\sqrt{2\pi}\sqrt{(T-t)}}e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \,dx
+\end{align*}$$
+
+>
+$$\begin{align*}
+C(S_t,t)&=e^{-r(T-t)}\int_K^\infty (x-K) \frac{1}{\sigma x\sqrt{2\pi}\sqrt{(T-t)}}e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \,dx \\
+&=\frac{e^{-r(T-t)}}{\sigma \sqrt{2\pi}\sqrt{(T-t)}} \int_K^\infty (x-K)e^{-\frac{1}{2} \frac{(\ln x-\ln S_t -(r-\frac{1}{2} \cdot \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \frac{1}{x}\,dx
+\end{align*}$$
+
+>Let $u=\frac{\ln x-\ln S_t -(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}$, we have
+$$\begin{align*}
+\ln \left( \frac{x}{S_t} \right)&=\sigma u\sqrt{T-t}+(r-\frac{1}{2} \cdot \sigma^2)(T-t) \\
+x&=S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}
+\end{align*}$$ 
+
+>
+$$\begin{align*}
+\,du&=\frac{1}{\sigma x\sqrt{T-t}}\,dx \\
+\sigma\sqrt{T-t}\,du&=\frac{1}{x}\,dx
+\end{align*}$$
+
+>$$\begin{align*}
+u_K&=\frac{\ln K-\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}} \\
+&=\frac{\ln \left( \frac{K}{S_t} \right)+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}
+\end{align*}$$
+
+>The value of the call option becomes:
+$$\begin{align*}
+C(S_t,t)&=\frac{e^{-r(T-t)}}{\sigma \sqrt{2\pi} \sqrt{T-t}} \int_K^\infty (x-K)e^{-\frac{1}{2} \frac{(\ln x-\ln S_t -(r-\frac{1}{2} \cdot \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \frac{1}{x}\,dx \\
+&=\frac{e^{-r(T-t)}}{\sigma \sqrt{2\pi}\sqrt{T-t}} \int_{u_K}^\infty (S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}-K)e^{-\frac{1}{2} u^2} \sigma\sqrt{T-t}\,du \\
+&=\frac{e^{-r(T-t)}}{\sigma\sqrt{2\pi}\sqrt{T-t}} \sigma\sqrt{T-t} \int_{u_K}^\infty (S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}e^{-\frac{1}{2} u^2}-Ke^{-\frac{1}{2} u^2}) \,du \\
+&=\frac{e^{-r(T-t)}}{\sqrt{2\pi}} \int_{u_K}^\infty (S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \cdot \sigma^2)(T-t)-\frac{1}{2} u^2}-Ke^{-\frac{1}{2} u^2}) \,du \\
+&=\frac{1}{\sqrt{2\pi}} \int_{u_K}^\infty S_te^{\sigma u\sqrt{T-t}-\frac{1}{2} \cdot \sigma^2(T-t)-\frac{1}{2} u^2}\,du \\
+&-\frac{e^{-r(T-t)}}{\sqrt{2\pi}} \int_{u_K}^\infty Ke^{-\frac{1}{2} u^2} \,du \\
+&=I_1 -  I_2 \\
+\end{align*}$$
+
+>
+$$\begin{align*}
+I_1 &=S_t \cdot \frac{1}{\sqrt{2\pi}} \int_{u_K}^\infty e^{-\frac{1}{2} u^2+\sigma u\sqrt{T-t}-\frac{1}{2} \cdot \sigma^2(T-t)}\,du \\
+&=S_t \cdot \frac{1}{\sqrt{2\pi}} \int_{u_K}^\infty e^{-\frac{1}{2} (u-\sigma\sqrt{T-t})^2}\,du \\
+&=S_t \cdot \frac{1}{\sqrt{2\pi}} \int_{u_K}^\infty e^{-\frac{1}{2} (u-\sigma\sqrt{T-t})^2}\,d(u-\sigma\sqrt{T-t}) \\
+&=S_t \cdot \frac{1}{\sqrt{2\pi}} \int_{u_K-\sigma\sqrt{T-t}}^\infty e^{-\frac{1}{2} u^2}\,du \\
+&= S_t \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\sigma\sqrt{T-t}-u_K} e^{-\frac{1}{2} u^2}\,du \\
+&=S_t\cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\sigma\sqrt{T-t}-\frac{\ln \left( \frac{K}{S_t} \right)-(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}} e^{-\frac{1}{2} u^2}\,du \\
+&=S_t\cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\frac{\sigma^2(T-t)-\ln \left( \frac{K}{S_t} \right)-(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}} e^{-\frac{1}{2} u^2}\,du \\
+&=S_t\cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}} e^{-\frac{1}{2} u^2}\,du \\
+&=S_t \cdot N \left({\frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}}\right)
+\end{align*}$$
+
+>$$\begin{align*}
+I_2 &=Ke^{-r(T-t)} \cdot \frac{1}{\sqrt{2\pi}} \int_{u_K}^\infty e^{-\frac{1}{2} u^2} \,du \\
+&=Ke^{-r(T-t)} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{-u_K} e^{-\frac{1}{2} u^2} \,du \\
+&=Ke^{-r(T-t)} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{-\frac{\ln \left( \frac{K}{S_t} \right)-(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}} e^{-\frac{1}{2} u^2} \,du \\
+&=Ke^{-r(T-t)} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\frac{\ln \left( \frac{S_t}{K} \right)+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}} e^{-\frac{1}{2} u^2} \,du \\
+&=Ke^{-r(T-t)} \cdot N \left({\frac{\ln \left( \frac{S_t}{K} \right)+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}}\right)
+\end{align*}$$
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t) = &S_t \cdot N \left({\frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}}\right) - Ke^{-r(T-t)} \cdot N \left({\frac{\ln \left( \frac{S_t}{K} \right)+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}}\right)
+\end{align*}$$
+
+
+## Put
+
+Suppose the stochastic process of the asset price $S_t$ follows a geometric
+Brownian motion:
+$$\,d S_t = 0.2 S_t \,dt + 0.3 S_t \,dW_t^\mathcal{P}$$
+where $W_t^P$
+is a standard Brownian motion on the real world probability
+space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European put option written on the stock
+with parameters: exercise price $K = 15$, maturity time $T=2$, $t=0.5$ (year), the
+risk-free interest rate is $r = 0.06$, $S_t=12$.
+
+Let $\widetilde W_t = W_t + \theta t$, with $\theta$ being a constant is an adapted process with respect to the filtration $()\mathcal{F}_t)_{t \geq 0}$. Find $\theta$ such that the discounted $(e^{−0.07t}S_t)_{t \ge 0}$ is a martingale process with respect to $\widetilde W_t$.
+
+Derive the Black-Scholes-Merton formula and then compute the option price.
+
+>$$S_T=e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}$$
+
+>We have
+$$\begin{align*}
+\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}}) &\sim \mathcal{N}(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t),\sigma^2(T-t)) \\
+e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})} &\sim \log\mathcal{N}(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t),\sigma^2(T-t)) \\
+ (S_T|S_t) &\sim \log\mathcal{N}(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t),\sigma^2(T-t)) \\
+\end{align*}$$
+
+>The probability density function of $(S_T|S_t)$ is
+$$f_{S_T|S_t}(x)=\frac{1}{\sigma x\sqrt{2\pi(T-t)}}e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} $$
+
+>From Feyman-Kac formula we have:
+$$P(S_t,t)=e^{-r(T-t)} \mathbb{E}^\mathcal{Q}[\max(K-S_T,0)|\mathcal{F}_t] $$
+
+>Applying the moment generating function, we have:
+$$\begin{align*} 
+P(S_t,t)&=e^{-r(T-t)}\int_{0}^\infty \max(K-x,0) f_{S_T|S_t}(x) \,dx \\
+&=e^{-r(T-t)}\int_{-\infty}^\infty \max(K-x,0) f_{S_T|S_t}(x) \,dx \\
+&=e^{-r(T-t)}\int_{-\infty}^K (K-x) \frac{1}{\sigma x\sqrt{2\pi}\sqrt{(T-t)}}e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \,dx \\
+&=e^{-r(T-t)}\int_{-\infty}^K (K-x) \frac{1}{\sigma x\sqrt{2\pi}\sqrt{(T-t)}}e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \,dx \\
+&=\frac{e^{-r(T-t)}}{\sigma \sqrt{2\pi}\sqrt{(T-t)}} \int_{-\infty}^K (K-x)e^{-\frac{1}{2} \frac{(\ln x-\ln S_t -(r-\frac{1}{2} \cdot \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \frac{1}{x}\,dx
+\end{align*}$$
+
+>Let 
+$u=\frac{\ln x-\ln S_t -(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}$, we have
+$$\begin{align*}
+\ln \left( \frac{x}{S_t} \right)&=\sigma u\sqrt{T-t}+(r-\frac{1}{2} \cdot \sigma^2)(T-t) \\
+x&=S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}
+\end{align*}$$ 
+
+>
+$$\begin{align*}
+\,du&=\frac{1}{\sigma x\sqrt{T-t}}\,dx \\
+\sigma\sqrt{T-t}\,du&=\frac{1}{x}\,dx
+\end{align*}$$
+
+>
+$$\begin{align*}
+u_K&=\frac{\ln K-\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}} \\
+&=\frac{\ln \left( \frac{K}{S_t} \right)+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}
+\end{align*}$$
+
+>The value of the put option becomes:
+$$\begin{align*}
+P(S_t,t)&=\frac{e^{-r(T-t)}}{\sigma \sqrt{2\pi} \sqrt{T-t}} \int_{-\infty}^K (K-x)e^{-\frac{1}{2} \frac{(\ln x-\ln S_t -(r-\frac{1}{2} \cdot \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \frac{1}{x}\,dx \\
+&=\frac{e^{-r(T-t)}}{\sigma \sqrt{2\pi}\sqrt{T-t}} \int_{-\infty}^{u_K} (-S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}+K)e^{-\frac{1}{2} u^2} \sigma\sqrt{T-t}\,du \\
+&=\frac{e^{-r(T-t)}\sqrt{T-t}}{\sqrt{2\pi}\sqrt{T-t}} \int_{-\infty}^{u_K} (-S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}e^{-\frac{1}{2} u^2}+Ke^{-\frac{1}{2} u^2}) \,du \\
+&=\frac{e^{-r(T-t)}}{\sqrt{2\pi}} \int_{-\infty}^{u_K} (-S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \cdot \sigma^2)(T-t)-\frac{1}{2} u^2}+Ke^{-\frac{1}{2} u^2}) \,du \\
+&=\frac{1}{\sqrt{2\pi}} \int_{-\infty}^{u_K} -S_te^{\sigma u\sqrt{T-t}-\frac{1}{2} \cdot \sigma^2(T-t)-\frac{1}{2} u^2}\,du \\
+&+\frac{e^{-r(T-t)}}{\sqrt{2\pi}} \int_{-\infty}^{u_K} Ke^{-\frac{1}{2} u^2} \,du \\
+&= I_1+I_2
+\end{align*}$$
+
+>
+$$\begin{align*}
+I_1&=\frac{1}{\sqrt{2\pi}} \int_{-\infty}^{u_K} -S_te^{\sigma u\sqrt{T-t}-\frac{1}{2} \cdot \sigma^2(T-t)-\frac{1}{2} u^2}\,du \\
+&=-S_t \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{u_K} e^{-\frac{1}{2} (u-\sigma\sqrt{T-t})^2}\,du \\
+&=-S_t \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{u_K} e^{-\frac{1}{2} (u-\sigma\sqrt{T-t})^2}\,d(u-\sigma\sqrt{T-t}) \\
+&=-S_t \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{u_K-\sigma\sqrt{T-t}} e^{-\frac{1}{2} u^2}\,du \\
+&=-S_t\cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\frac{\ln \left( \frac{K}{S_t} \right)-(r-\frac{1}{2} \cdot \sigma^2)(T-t)-\sigma^2(T-t)}{\sigma\sqrt{T-t}}} e^{-\frac{1}{2} u^2}\,du \\
+&=-S_t\cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{-\frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}} e^{-\frac{1}{2} u^2}\,du \\
+&=-S_t \cdot N \left({-\frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}}\right)  \\
+\end{align*}$$
+
+>
+$$\begin{align*}
+I_2&=Ke^{-r(T-t)} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{u_K} e^{-\frac{1}{2} u^2} \,du \\
+&=Ke^{-r(T-t)} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\frac{\ln \left( \frac{K}{S_t} \right)-(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}} e^{-\frac{1}{2} u^2} \,du \\
+&=Ke^{-r(T-t)} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{-\left(\frac{\ln \left( \frac{S_t}{K} \right)+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}\right)} e^{-\frac{1}{2} u^2} \,du \\
+&=Ke^{-r(T-t)} \cdot N \left(-{\frac{\ln \left( \frac{S_t}{K} \right)+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}}\right)
+\end{align*}$$
+
+>Answer: The value of the put option is:
+$$\begin{align*}
+P(S_t,t) &= -S_t \cdot N \left({-\frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}}\right) + Ke^{-r(T-t)} \cdot N \left(-{\frac{\ln \left( \frac{S_t}{K} \right)+(r-\frac{1}{2} \cdot \sigma^2)(T-t)}{\sigma\sqrt{T-t}}}\right)\\
+\end{align*}$$
+
+# Vanilla - ABM
+
+## Call
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+
+$$\,d S_t = 0.05 \,dt + 0.3 \,d W_t^{\mathcal{P}},$$
+
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European digital call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+>Let $W_t^Q = W_t^P + \int_0^t \theta_s \,d s$, with $(\theta_t)_{t \geq 0}$ is an adapted process with $(\mathcal{F}_t)_{t \geq 0}$.
+$$\begin{align*}
+d(e^{−rt}S_t) &= −re^{−rt}S_t \,dt + e^{−rt}\,d S_t \\
+&= −re^{−rt}S_t \,dt + e^{−rt}(\mu \,dt + \sigma \,dW_t^P) \\
+&= e^{−rt}((\mu − rS_t) \,dt + \sigma (W_t^Q - \theta_t \,d t)) \\
+&= e^{−rt}((\mu − rS_t -\sigma\theta_t) \,dt + \sigma W_t^Q) \\
+\end{align*}$$
+
+>We choose $\theta_t = \frac{\mu -r S_t}{\sigma}$
+then $E^{\mathcal{P}} \left(e^{\frac{1}{2} \int_0^T \theta_t^2 \,dt} \right)< \infty$ and $Z_t = e^{\int_0^t \theta_s \,d W_s- \frac{1}{2} \int_0^t \theta_s^2 \,ds}$ is a positive martingale.
+From Girsanov’s theorem, there exist a risk-neutral measure $\mathcal{Q}$ defined by $E\left[\frac{\,d \mathcal{Q}}{\,d \mathcal{P}} | \mathcal{F}_t \right] = Z_t$ such that $W_t^{\mathcal{Q}}$ is a Standard Brownian motion under $\mathcal{Q}$.
+As $d(e^{−rt}S_t) = \sigma e^{−rt} \,d W_t^{\mathcal{Q}}$, $e^{−rt}S_t$ is a martingale under $\mathcal{Q}$ and $\mathcal{Q}$ is an equivalent martingale measure to $\mathcal{P}$
+
+>By taking the integral both sides of the above equality from t to T, we
+obtain:
+$$\begin{align*}
+\int_t^T d(e^{−rt}S_t) &= \int_t^T\sigma e^{−ru} \,d W_t^{\mathcal{Q}} \\
+e^{−rt} S_T - e^{−rt} S_t &= \int_t^T\sigma e^{−ru} \,d W_t^{\mathcal{Q}} \\
+S_T&= e^{r(T-t)} S_t + \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}} \\
+& \sim \mathcal{N} \left(e^{r(T-t)} S_t ,  \left( \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}}\right)^2 \right) \\
+& \sim \mathcal{N} \left( e^{r(T-t)} S_t ,  \frac{\sigma^2}{2r}(e^{2r(T-t)}-1)  \right)
+\end{align*}$$
+
+>The probability density function of $S_T|S_t$ can be written as: 
+$$f_{S_T|s_t}(y) = \frac{1}{v \sqrt{2\pi}} e^{-\frac{(y-m)^2}{2v^2}}$$
+where $m=e^{r(T-t)} S_t$ and $v^2=\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)$
+
+>From the Feyman-Kac formula, where $E^{\mathcal{Q}}$ is the expectation under the risk-neutral measure Q, the price of the European put option:
+$$\begin{align*}
+C(S_t,t) &= e^{-r(T-t)}E^{\mathcal{Q}} [\max(S_t-K,0)|\mathcal{F}_t] \\
+&= e^{-r(T-t)} \int_{-\infty}^{\infty}\max(y-K,0) f_{S_T|s_t}(y) \,dy \\
+&= e^{-r(T-t)} \int_{K}^{\infty} \frac{y-K}{v \sqrt{2\pi}} e^{-\frac{(y-m)^2}{2v^2}} \,dy \\
+&= e^{-r(T-t)} \int_{K}^{\infty} \frac{y-K}{\sqrt{2\pi}} e^{-\frac{(y-m)^2}{2v^2}} \frac{1}{v}\,dy
+\end{align*}$$
+
+>Using the variable transformation $u = \frac{y-m}{v}$ then $y=m+uv$ and $\,du = \frac{1}{v} \,dy$, we obtain:
+$$\begin{align*}
+C(S_t,t) &= e^{-r(T-t)} \int_{\frac{K-m}{v}}^{\infty} \frac{(m+uv)-K}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= e^{-r(T-t)}\int_{\frac{K-m}{v}}^{\infty} \frac{m-K}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du + e^{-r(T-t)}\int_{\frac{K-m}{v}}^{\infty} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du   \\
+&= I_1 + I_2
+\end{align*}$$
+
+>With the notation 
+$$\begin{align*}
+m&=e^{r(T-t)} S_t \\
+v&=\sigma \sqrt{\frac{e^{2r(T-t)}-1}{2r}} \\
+\hat \sigma &= \sigma \sqrt{\frac{1-e^{-2r(T-t)}}{2r}} \\
+d &= \frac{S_t-Ke^{-r(T-t)}}{ \hat \sigma} \\
+N(x) &= \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}y^2} \,dy \\
+N'(x) &=\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}x^2}
+\end{align*}$$
+
+>We have
+$$\begin{align*}
+I_1 &= e^{-r(T-t)}\int_{\frac{K-m}{v}}^{\infty} \frac{m-K}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= e^{-r(T-t)} (m-K) \int_{-\infty}^{\frac{m-K}{v}} \frac{1}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= e^{-r(T-t)} (m-K) N \left( \frac{m-K}{v} \right) \\
+&= e^{-r(T-t)} (e^{r(T-t)} S_t-K) N \left( \frac{e^{r(T-t)} S_t-K}{\sigma \sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) \\
+&=  (S_t-Ke^{-r(T-t)}) N \left( \frac{ S_t-Ke^{-r(T-t)}}{\sigma \sqrt{\frac{1-e^{-2r(T-t)}}{2r}}} \right)\\
+I_2 &= e^{-r(T-t)}\int_{\frac{K-m}{v}}^{\infty} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= ve^{-r(T-t)}\int_{\frac{K-m}{v}}^{\infty} \frac{1}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,d \left(\frac{u^2}{2} \right) \\
+&= ve^{-r(T-t)}\int_{\frac{1}{2} \left(\frac{K-m}{v} \right)^2}^{\infty} \frac{1}{\sqrt{2\pi}} e^{-x} \,dx  \\
+&= ve^{-r(T-t)} \frac{1}{\sqrt{2\pi}} \cdot (-e^{-x}) \Biggr|_{\frac{1}{2} \left(\frac{K-m}{v} \right)^2}^{\infty}  \\
+&= ve^{-r(T-t)} \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{1}{2} \left(\frac{m-K}{v} \right)^2} \\
+&= \sigma \sqrt{\frac{e^{2r(T-t)}-1}{2r}}e^{-r(T-t)} \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{1}{2} \left(\frac{m-K}{v} \right)^2} \\
+&=  \sigma e^{r(T-t)} \sqrt{\frac{1-e^{2r(T-t)}}{2r}}e^{-r(T-t)} N' \left( \frac{ S_t-Ke^{-r(T-t)}}{\sigma \sqrt{\frac{1-e^{-2r(T-t)}}{2r}}} \right)
+\end{align*}$$
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t) &= (S_t-Ke^{-r(T-t)}) N \left( \frac{ S_t-Ke^{-r(T-t)}}{\sigma \sqrt{\frac{1-e^{-2r(T-t)}}{2r}}} \right) + \sigma \sqrt{\frac{1-e^{2r(T-t)}}{2r}} N' \left( \frac{ S_t-Ke^{-r(T-t)}}{\sigma \sqrt{\frac{1-e^{-2r(T-t)}}{2r}}} \right)
+\end{align*}$$
+
+## Put
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+
+$$\,d S_t = 0.05 \,dt + 0.3 \,d W_t^{\mathcal{P}},$$
+
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European digital put option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+>$$\begin{align*}
+S_T&= e^{r(T-t)} S_t + \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}} \\
+& \sim \mathcal{N} \left(e^{r(T-t)} S_t ,  \left( \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}}\right)^2 \right) \\
+& \sim \mathcal{N} \left( e^{r(T-t)} S_t ,  \frac{\sigma^2}{2r}(e^{2r(T-t)}-1)  \right)
+\end{align*}$$
+
+>The probability density function of $S_T|S_t$ can be written as: 
+$$f_{S_T|s_t}(y) = \frac{1}{v \sqrt{2\pi}} e^{-\frac{(y-m)^2}{2v^2}}$$
+where $m=e^{r(T-t)} S_t$ and $v^2=\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)$
+
+>From the Feyman-Kac formula, where $E^{\mathcal{Q}}$ is the expectation under the risk-neutral measure Q, the price of the European put option:
+$$\begin{align*}
+P(S_t,t) &= e^{-r(T-t)}E^{\mathcal{Q}} [\max(K-S_t,0)|\mathcal{F}_t] \\
+&= e^{-r(T-t)} \int_{-\infty}^{\infty}\max(K-y,0) f_{S_T|s_t}(y) \,dy \\
+&= e^{-r(T-t)} \int_{-\infty}^{K} \frac{K-y}{v \sqrt{2\pi}} e^{-\frac{(y-m)^2}{2v^2}} \,dy \\
+&= e^{-r(T-t)} \int_{-\infty}^{K} \frac{K-y}{\sqrt{2\pi}} e^{-\frac{(y-m)^2}{2v^2}} \frac{1}{v}\,dy
+\end{align*}$$
+
+>Using the variable transformation $u = \frac{y-m}{v}$ then $y=m+uv$ and $\,du = \frac{1}{v} \,dy$, we obtain:
+$$\begin{align*}
+P(S_t,t) &= e^{-r(T-t)} \int_{-\infty}^{\frac{K-m}{v}} \frac{K-(m+uv)}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= e^{-r(T-t)}\int_{-\infty}^{\frac{K-m}{v}} \frac{K-m}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du + \left(- e^{-r(T-t)}\int_{-\infty}^{\frac{K-m}{v}} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \right)   \\
+&= I_1 + I_2
+\end{align*}$$
+
+>With the notation 
+$$\begin{align*}
+m&=e^{r(T-t)} S_t \\
+v&=\sigma \sqrt{\frac{e^{2r(T-t)}-1}{2r}} \\
+\hat \sigma &= \sigma \sqrt{\frac{1-e^{-2r(T-t)}}{2r}} \\
+d &= \frac{S_t-Ke^{-r(T-t)}}{ \hat \sigma} \\
+N(x) &= \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}y^2} \,dy \\
+N'(x) &=\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}x^2}
+\end{align*}$$
+
+>We have
+$$\begin{align*}
+I_1 &= e^{-r(T-t)}\int_{-\infty}^{\frac{K-m}{v}} \frac{K-m}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= e^{-r(T-t)} (K-m) \int_{-\infty}^{\frac{K-m}{v}} \frac{1}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= e^{-r(T-t)} (K-m) N \left( -\frac{m-K}{v} \right) \\
+&= e^{-r(T-t)} (K-e^{r(T-t)} S_t) N \left( -\frac{e^{r(T-t)} S_t-K}{\sigma \sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) \\
+&=  -(S_t-Ke^{-r(T-t)}) N \left( -\frac{ S_t-Ke^{-r(T-t)}}{\sigma \sqrt{\frac{1-e^{-2r(T-t)}}{2r}}} \right)\\
+I_2 &= -e^{-r(T-t)}\int_{-\infty}^{\frac{K-m}{v}} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= ve^{-r(T-t)}\int_{-\infty}^{\frac{K-m}{v}} \frac{1}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,d \left(-\frac{u^2}{2} \right) \\
+&= ve^{-r(T-t)}\int_{-\infty}^{-\frac{1}{2} \left(\frac{K-m}{v} \right)^2} \frac{1}{\sqrt{2\pi}} e^{x} \,dx  \\
+&= ve^{-r(T-t)} \frac{1}{\sqrt{2\pi}} \cdot (e^{x}) \Biggr|_{-\infty}^{-\frac{1}{2} \left(\frac{K-m}{v} \right)^2}  \\
+&= ve^{-r(T-t)} \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{1}{2} \left(\frac{m-K}{v} \right)^2} \\
+&= \sigma \sqrt{\frac{e^{2r(T-t)}-1}{2r}}e^{-r(T-t)} \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{1}{2} \left(-\frac{m-K}{v} \right)^2} \\
+&=  \sigma e^{r(T-t)} \sqrt{\frac{1-e^{2r(T-t)}}{2r}}e^{-r(T-t)} N' \left( -\frac{ S_t-Ke^{-r(T-t)}}{\sigma \sqrt{\frac{1-e^{-2r(T-t)}}{2r}}} \right)
+\end{align*}$$
+
+>Answer: The value of the put option is:
+$$\begin{align*}
+P(S_t,t) &=  -(S_t-Ke^{-r(T-t)}) N \left( -\frac{ S_t-Ke^{-r(T-t)}}{\sigma \sqrt{\frac{1-e^{-2r(T-t)}}{2r}}} \right) + \sigma  \sqrt{\frac{1-e^{2r(T-t)}}{2r}} N' \left( -\frac{ S_t-Ke^{-r(T-t)}}{\sigma \sqrt{\frac{1-e^{-2r(T-t)}}{2r}}} \right)\\
+\end{align*}$$
+
+# Digital - GBM
+
+## Call
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+
+$$\,d S_t = 0.05 S_t \,dt + 0.3 S_t \,d W_t^{\mathcal{P}},$$
+
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European digital call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ for the fair price of the option?
+
+>$$S_T=e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}$$
+
+>From the Feynman–Kac formula the digital call option is given by: 
+$$C_d(S_t,t) = e^{−r(T−t)}E^Q [\mathcal{I}_{S_T > K} |Ft],$$
+where $E^Q$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t > K\\
+        0 & \text{if } S_t \leq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain
+$$\begin{align*}
+C_d(S_t,t) &= e^{−r(T−t)}E^Q [\mathcal{I}_{S_T > K}  | \mathcal{F}_t] \\
+&= e^{−r(T−t)} [1 \cdot \mathcal{Q}(S_T > K | \mathcal{F}_t) + 0 \cdot \mathcal{Q}(S_T \leq K | \mathcal{F}_t)]  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q}(S_T > K | \mathcal{F}_t)  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q}(e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})} > K | \mathcal{F}_t) \\
+&= e^{−r(T−t)} \cdot \mathcal{Q} \left(\frac{W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}}}{\sqrt{T-t}} > \frac{\ln \left( \frac{K}{S_t}\right) - \left(r-\frac{1}{2}\sigma^2 \right)(T-t)}{\sigma \sqrt{T-t}} \right) \\
+&= e^{−r(T−t)} \cdot \mathcal{Q} \left(\mathcal{Z} < -\frac{\ln \left( \frac{K}{S_t}\right) - \left(r-\frac{1}{2}\sigma^2 \right)(T-t)}{\sigma \sqrt{T-t}} \right) \\
+&= e^{−r(T−t)} \cdot N \left(\frac{\ln \left( \frac{S_t}{K}\right) + \left(r-\frac{1}{2}\sigma^2 \right)(T-t)}{\sigma \sqrt{T-t}} \right)
+\end{align*}$$
+where $N(x) = \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}y^2}\,dy$ \right)(T-t)}{\sigma \sqrt{T-t}}$.
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t) &=  e^{−r(T−t)} \cdot N \left(\frac{\ln \left( \frac{S_t}{K}\right) + \left(r-\frac{1}{2}\sigma^2 \right)(T-t)}{\sigma \sqrt{T-t}} \right)
+\end{align*}$$
+
+## Put
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+
+$$\,d S_t = 0.05 S_t \,dt + 0.34 S_t \,d W_t^{\mathcal{P}},$$
+
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European digital put option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ for the fair price of the option?
+
+>$$S_T=e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}$$
+
+>From the Feynman–Kac formula the digital call option is given by: 
+$$C_d(S_t,t) = e^{−r(T−t)}E^Q [\mathcal{I}_{S_T > K} |Ft],$$
+where $E^Q$. is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t > K\\
+        0 & \text{if } S_t \leq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain
+$$\begin{align*}
+P_d(S_t,t) &= e^{−r(T−t)}E^Q [\mathcal{I}_{S_T< K} | \mathcal{F}_t] \\
+&= e^{−r(T−t)} [1 \cdot \mathcal{Q}(S_T < K | \mathcal{F}_t) + 0 \cdot \mathcal{Q}(S_T \geq K | \mathcal{F}_t)]  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q}(S_T < K | \mathcal{F}_t)  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q}(e^{\ln S_t +(r-\frac{1}{2} \cdot \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})} < K | \mathcal{F}_t) \\
+&= e^{−r(T−t)} \cdot \mathcal{Q} \left(\frac{W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}}}{\sqrt{T-t}} < \frac{\ln \left( \frac{K}{S_t}\right) - \left(r-\frac{1}{2}\sigma^2 \right)(T-t)}{\sigma \sqrt{T-t}} \right) \\
+&= e^{−r(T−t)} \cdot \mathcal{Q} \left(\mathcal{Z} < \frac{\ln \left( \frac{K}{S_t}\right) - \left(r-\frac{1}{2}\sigma^2 \right)(T-t)}{\sigma \sqrt{T-t}} \right) \\
+&= e^{−r(T−t)} \cdot N \left(-\frac{\ln \left( \frac{S_t}{K}\right) + \left(r-\frac{1}{2}\sigma^2 \right)(T-t)}{\sigma \sqrt{T-t}} \right)
+\end{align*}$$
+where $N(x) = \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}y^2}\,dy$ \right)(T-t)}{\sigma \sqrt{T-t}}$.
+
+>Answer: The value of the put option is:
+$$\begin{align*}
+P(S_t,t) &=  e^{−r(T−t)} \cdot N \left(-\frac{\ln \left( \frac{S_t}{K}\right) + \left(r-\frac{1}{2}\sigma^2 \right)(T-t)}{\sigma \sqrt{T-t}} \right)
+\end{align*}$$
+
+# Digital - ABM (1)
+
+## Call
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$\,d S_t = 0.05 \,dt + 0.3 \,dW_t^{\mathcal{Q}},$$
+where $\mathcal{Q}$ is a standard Brownian motion on a risk-neutral probability space, denoted by $(\omega, \mathcal{F}, \mathcal{Q})$. A European digital call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year),
+the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ and then compute the fair price.
+
+$$\,dS_t =\mu \,dt + \sigma\,d W_t^{\mathcal{Q}}$$
+
+>Integrating both sides from $t$ to $T$, we have:
+$$\begin{align*}
+\int_t^T \,d S_s &= \int_t^T \mu \,d s + \int_t^T \sigma \,d W_s^{\mathcal{Q}} \\
+\rightarrow S_T &= S_t + \mu(T-t) + \sigma(W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}}) \\
+&\sim \mathcal{N}(S_t+\mu(T-t),\sigma^2(T-t))
+\end{align*}$$
+
+>From Feyman-Kac formula, we have:
+$$C_d(S_t,t) = e^{-r(T-t)}E^{\mathcal{Q}}[\mathcal{I}_{S_T > K}|\mathcal{F}_t],$$
+where $E^{\mathcal{Q}}$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t > K\\
+        0 & \text{if } S_t \leq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain:
+$$\begin{align*}
+C_d(S_t,t) &= e^{−r(T−t)}E^Q [\mathcal{I}_{S_T > K}  | \mathcal{F}_t] \\
+&= e^{−r(T−t)} [1 \cdot \mathcal{Q}(S_T > K | \mathcal{F}_t) + 0 \cdot \mathcal{Q}(S_T \leq K | \mathcal{F}_t)]  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q}(S_T > K | \mathcal{F}_t)  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q}(S_t+ \mu(T-t) +\sigma(W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}}) > K | \mathcal{F}_t)  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q} \left(\frac{W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}}}{\sqrt{T-t}} > \frac{K -(S_t+ \mu(T-t))}{\sigma \sqrt{T-t}} | \mathcal{F}_t \right)  \\
+&= e^{−r(T−t)} N \left( -\frac{K -(S_t+ \mu(T-t))}{\sigma \sqrt{T-t}} | \mathcal{F}_t \right)  \\
+\end{align*}$$
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t)  &= e^{−r(T−t)} N \left( -\frac{K -(S_t+ \mu(T-t))}{\sigma \sqrt{T-t}} | \mathcal{F}_t \right)
+\end{align*}$$
+
+## Put
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$dS_t = 0.05\,dt + 0.3\,dW_t^{\mathcal{Q}},$$
+where $\mathcal{Q}$ is a standard Brownian motion on a risk-neutral probability space, denoted by $(\omega, \mathcal{F}, \mathcal{Q})$. A European digital put option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 7$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ and then compute the fair price.
+
+$$\,dS_t =\mu \,dt + \sigma\,d W_t^{\mathcal{Q}}$$
+
+>Integrating both sides from $t$ to $T$, we have:
+$$\begin{align*}
+\int_t^T \,d S_s &= \int_t^T \mu \,d s + \int_t^T \sigma \,d W_s^{\mathcal{Q}} \\
+\rightarrow S_T &= S_t + \mu(T-t) + \sigma(W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}}) \\
+&\sim \mathcal{N}(S_t+\mu(T-t),\sigma^2(T-t))
+\end{align*}$$
+
+>From Feyman-Kac formula, we have:
+$$P_d(S_t,t) = e^{-r(T-t)}E^{\mathcal{Q}}[\mathcal{I}_{S_T > K}|\mathcal{F}_t],$$
+where $E^{\mathcal{Q}}$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t > K\\
+        0 & \text{if } S_t \leq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain:
+$$\begin{align*}
+P_d(S_t,t) &= e^{−r(T−t)}E^Q [\mathcal{I}_{S_T < K}  | \mathcal{F}_t] \\
+&= e^{−r(T−t)} [1 \cdot \mathcal{Q}(S_T < K | \mathcal{F}_t) + 0 \cdot \mathcal{Q}(S_T \leq K | \mathcal{F}_t)]  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q}(S_T < K | \mathcal{F}_t)  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q}(S_t+ \mu(T-t) +\sigma(W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}}) < K | \mathcal{F}_t)  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q} \left(\frac{W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}}}{\sqrt{T-t}} < \frac{K -(S_t+ \mu(T-t))}{\sigma \sqrt{T-t}} | \mathcal{F}_t \right)  \\
+&= e^{−r(T−t)} N \left(\frac{K -(S_t+ \mu(T-t))}{\sigma \sqrt{T-t}} | \mathcal{F}_t \right)
+\end{align*}$$
+
+>Answer: The value of the put option is:
+$$\begin{align*}
+P(S_t,t) &= e^{−r(T−t)} N \left(\frac{K -(S_t+ \mu(T-t))}{\sigma \sqrt{T-t}} | \mathcal{F}_t \right)  \\
+\end{align*}$$
+
+# Digital - ABM (2)
+
+## Call
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$dS_t = 0.05 \,dt + 0.3\,d W_t^{\mathcal{P}},$$
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European digital call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ and then compute the fair price.
+
+>
+$$\begin{align*}
+S_T&= e^{r(T-t)} S_t + \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}} \\
+& \sim \mathcal{N} \left(e^{r(T-t)} S_t ,  \left( \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}}\right)^2 \right) \\
+& \sim \mathcal{N} \left( e^{r(T-t)} S_t ,  \frac{\sigma^2}{2r}(e^{2r(T-t)}-1)  \right)
+\end{align*}$$
+
+>From the Feynman–Kac formula the digital call option is given by: 
+$$C_d(S_t,t) = e^{−r(T−t)}E^Q [\mathcal{I}_{S_T > K} |Ft],$$
+where $E^Q$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t > K\\
+        0 & \text{if } S_t \leq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain
+$$\begin{align*}
+C_d(S_t,t) &= e^{−r(T−t)}E^Q [\mathcal{I}_{S_T > K}  | \mathcal{F}_t] \\
+&= e^{−r(T−t)} [1 \cdot \mathcal{Q}(S_T > K | \mathcal{F}_t) + 0 \cdot \mathcal{Q}(S_T \leq K | \mathcal{F}_t)]  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q}(S_T > K | \mathcal{F}_t)  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q} \left( \frac{S_T-e^{r(T-t)} S_t}{\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)} > \frac{K-e^{r(T-t)} S_t}{\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)} | \mathcal{F}_t \right)  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q} \left( \mathcal{Z} < -\frac{K-e^{r(T-t)} S_t}{\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)} | \mathcal{F}_t \right)  \\
+&= e^{−r(T−t)} \cdot N \left( -\frac{K-e^{r(T-t)} S_t}{\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)} \right)  \\
+\end{align*}$$
+where $N(x) = \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}y^2}\,dy$ and $d = \frac{e^{r(T-t)} S_t - K}{\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)}$.
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t) &= e^{−r(T−t)} \cdot N \left( -\frac{K-e^{r(T-t)} S_t}{\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)} \right)
+\end{align*}$$
+
+## Put
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$dS_t = 0.05 \,dt + 0.3\,d W_t^{\mathcal{P}},$$
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European digital call option written on the stock with parameters: exercise price $K = 32$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.08$, $t = 0.5$, $T = 1$, $S_t =26.9$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ and then compute the fair price.
+
+>
+$$\begin{align*}
+S_T&= e^{r(T-t)} S_t + \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}} \\
+& \sim \mathcal{N} \left(e^{r(T-t)} S_t ,  \left( \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}}\right)^2 \right) \\
+& \sim \mathcal{N} \left( e^{r(T-t)} S_t ,  \frac{\sigma^2}{2r}(e^{2r(T-t)}-1)  \right)
+\end{align*}$$
+
+>From Feyman-Kac formula, we have:
+$$P_d(S_t,t) = e^{-r(T-t)}E^{\mathcal{Q}}[\mathcal{I}_{S_T < K}|\mathcal{F}_t],$$
+where $E^{\mathcal{Q}}$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t < K\\
+        0 & \text{if } S_t \geq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain:
+$$\begin{align*}
+P_d(S_t,t) &= e^{−r(T−t)}E^Q [\mathcal{I}_{S_T < K}  | \mathcal{F}_t] \\
+&= e^{−r(T−t)} [1 \cdot \mathcal{Q}(S_T < K | \mathcal{F}_t) + 0 \cdot \mathcal{Q}(S_T \geq K | \mathcal{F}_t)]  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q}(S_T < K | \mathcal{F}_t)  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q}(S_t+ \mu(T-t) +\sigma(W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}}) < K | \mathcal{F}_t)  \\
+&= e^{−r(T−t)} \cdot \mathcal{Q} \left(\frac{W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}}}{\sqrt{T-t}} < \frac{K -(S_t+ \mu(T-t))}{\sigma \sqrt{T-t}} | \mathcal{F}_t \right)  \\
+&= e^{−r(T−t)} N \left( \frac{K-e^{r(T-t)} S_t}{\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)} \right) 
+\end{align*}$$
+
+>Answer: The value of the put option is:
+$$\begin{align*}
+P(S_t,t) &= e^{−r(T−t)} \cdot N \left(\frac{K-e^{r(T-t)} S_t}{\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)} \right)
+\end{align*}$$
+
+# Asset or nothing - GBM
+
+## Call
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t = 0.05 S_t \,d t + 0.3 S_t \,d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\omega,\mathcal{F},\mathcal{P})$. Asset-or-nothing call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$.
+
+Compute the fair price when $t = 0.5$, $T = 1$, $S_t = 9$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ for the fair price of the option? 
+
+>$$S_T = e^{\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}$$
+
+>We have
+$$\begin{align*}
+\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}}) &\sim \mathcal{N}(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t),\sigma^2(T-t)) \\
+e^{\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})} &\sim \ln \mathcal{N}(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t),\sigma^2(T-t)) \\
+ (S_T|S_t) &\sim \ln \mathcal{N}(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t),\sigma^2(T-t)) \\
+\end{align*}$$
+
+>The probability density function of $(S_T|S_t)$ is
+$$f_{S_T|S_t}(x)=\frac{1}{\sigma x\sqrt{2\pi(T-t)}}e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)))^2}{\sigma^2(T-t)}}$$
+
+>From the Feynman–Kac formula, we have:
+$$C_a(S_t,t) = e^{−r(T−t)}E^Q [S_T\mathcal{I}_{S_T > K} |F_t],$$
+where $E^Q$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t > K\\
+        0 & \text{if } S_t \leq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain
+$$\begin{align*}
+C_a(S_t,t) &= e^{−r(T−t)}E^Q [S_T\mathcal{I}_{S_T > K}  | \mathcal{F}_t] \\
+&= e^{−r(T−t)} \int_K^{\infty} \frac{x}{\sigma x\sqrt{2\pi(T-t)}}e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \,d x \\ 
+&= \frac{1}{\sqrt{2\pi}}  \int_K^{\infty}  e^{−r(T−t)} \cdot e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \cdot \frac{1}{\sigma \sqrt{(T-t)}} \,d x \\ 
+\end{align*}$$
+
+>
+Let $u=\frac{\ln x-\ln S_t -(r-\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}}$, we have
+$$\begin{align*}
+\ln \left( \frac{x}{S_t} \right)&=\sigma u\sqrt{T-t}+(r-\frac{1}{2} \sigma^2)(T-t) \\
+x&=S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \sigma^2)(T-t)}
+\end{align*}$$ 
+
+>
+$$\begin{align*}
+\,du&=\frac{1}{\sigma x\sqrt{T-t}}\,dx \\
+\frac{1}{\sigma \sqrt{(T-t)}} \,d x &= x \,d u \\
+&=S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \sigma^2)(T-t)} \,du
+\end{align*}$$
+
+>
+$$\begin{align*}
+u_K&=\frac{\ln K-\ln S_t -(r-\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}} \\
+&=\frac{\ln \left( \frac{K}{S_t} \right)-(r-\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}} \\
+\rightarrow -u_K + \sigma \sqrt{T-t} &= \frac{\ln \left( \frac{S_t}{K} \right)+(r-\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}} + \sigma \sqrt{T-t} \\
+&= \frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}}
+\end{align*}$$
+
+>The value of the call option becomes:
+$$\begin{align*}
+    C_a(S_t,t)&= \int_{u_k}^{\infty} e^{−r(T−t)} \cdot e^{-\frac{1}{2}u^2}\cdot S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \sigma^2)(T-t)} \,du \\
+    &= S_t \int_{u_k}^{\infty} e^{-\frac{1}{2}u^2+u \sigma \sqrt{T-t}-\frac{1}{2} \cdot\sigma^2(T-t)} \,du \\
+    &= S_t \int_{u_k}^{\infty} e^{-\frac{1}{2}(u-\sigma\sqrt{T-t})^2} \,du \\
+    &= S_t \int_{u_k -\sigma\sqrt{T-t}}^{\infty} e^{-\frac{1}{2}u^2} \,du \\
+    &= S_t \int_{-\infty}^{-u_k +\sigma\sqrt{T-t}} e^{-\frac{1}{2}u^2} \,du \\
+    &= S_t \cdot N \left( \frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}}\right)
+\end{align*}$$
+where $N(x) = \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}y^2}\,dy$ \sigma^2)(T-t)}{\sigma\sqrt{T-t}}$.
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t) &= S_t \cdot N \left( \frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}}\right)
+\end{align*}$$
+
+
+## Put
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$ \,d S_t = 0.05 S_t \,dt + 0.3 S_t \,d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\omega,\mathcal{F},\mathcal{P})$. Asset-or-nothing put option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 7$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ for the fair price of the option? 
+
+Compute the fair price when $t = 0.5$, $T = 1$, $S_t = 9$.
+
+>$$S_T = e^{\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}$$
+
+>We have
+$$\begin{align*}
+\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}}) &\sim \mathcal{N}(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t),\sigma^2(T-t)) \\
+e^{\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)+\sigma(W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})} &\sim \ln \mathcal{N}(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t),\sigma^2(T-t)) \\
+ (S_T|S_t) &\sim \ln \mathcal{N}(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t),\sigma^2(T-t)) \\
+\end{align*}$$
+
+>The probability density function of $(S_T|S_t)$ is
+$$f_{S_T|S_t}(x)=\frac{1}{\sigma x\sqrt{2\pi(T-t)}}e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)))^2}{\sigma^2(T-t)}}$$
+
+>From the Feynman–Kac formula, we have:
+$$P_a(S_t,t) = e^{−r(T−t)}E^Q [S_T\mathcal{I}_{S_T < K} |F_t],$$
+where $E^Q$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t < K\\
+        0 & \text{if } S_t \geq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain
+$$\begin{align*}
+P_a(S_t,t) &= e^{−r(T−t)}E^Q [S_T\mathcal{I}_{S_T < K}  | \mathcal{F}_t] \\
+&= e^{−r(T−t)} \int_{-\infty}^{K} \frac{x}{\sigma x\sqrt{2\pi(T-t)}}e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \,d x \\ 
+&= \frac{1}{\sqrt{2\pi}}  \int_{-\infty}^{K}  e^{−r(T−t)} \cdot e^{-\frac{1}{2} \frac{(\ln x-(\ln S_t +(r-\frac{1}{2} \sigma^2)(T-t)))^2}{\sigma^2(T-t)}} \cdot \frac{1}{\sigma \sqrt{(T-t)}} \,d x \\ 
+\end{align*}$$
+
+>
+Let $u=\frac{\ln x-\ln S_t -(r-\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}}$, we have
+$$\begin{align*}
+\ln \left( \frac{x}{S_t} \right)&=\sigma u\sqrt{T-t}+(r-\frac{1}{2} \sigma^2)(T-t) \\
+x&=S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \sigma^2)(T-t)}
+\end{align*}$$ 
+
+>
+$$\begin{align*}
+\,du&=\frac{1}{\sigma x\sqrt{T-t}}\,dx \\
+\frac{1}{\sigma \sqrt{(T-t)}} \,d x &= x \,d u \\
+&=S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \sigma^2)(T-t)} \,du
+\end{align*}$$
+
+>
+$$\begin{align*}
+u_K&=\frac{\ln K-\ln S_t -(r-\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}} \\
+&=\frac{\ln \left( \frac{K}{S_t} \right)-(r-\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}} \\
+\rightarrow u_K - \sigma \sqrt{T-t} &= -\frac{\ln \left( \frac{S_t}{K} \right)+(r-\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}} - \sigma \sqrt{T-t} \\
+&= -\frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}}
+\end{align*}$$
+
+>The value of the call option becomes:
+$$\begin{align*}
+    P_a(S_t,t)&= \int_{-\infty}^{u_k} e^{−r(T−t)} \cdot e^{-\frac{1}{2}u^2}\cdot S_te^{\sigma u\sqrt{T-t}+(r-\frac{1}{2} \sigma^2)(T-t)} \,du \\
+    &= S_t \int_{-\infty}^{u_k} e^{-\frac{1}{2}u^2+u \sigma \sqrt{T-t}-\frac{1}{2} \cdot\sigma^2(T-t)} \,du \\
+    &= S_t \int_{-\infty}^{u_k} e^{-\frac{1}{2}(u-\sigma\sqrt{T-t})^2} \,du \\
+    &= S_t \int_{-\infty}^{u_k -\sigma\sqrt{T-t}} e^{-\frac{1}{2}u^2} \,du \\
+    &= S_t \cdot N \left( -\frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}}\right)
+    \end{align*}$$
+where $N(x) = \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}y^2}\,dy$
+
+>Answer: The value of the put option is:
+$$\begin{align*}
+P(S_t,t) &= S_t \cdot N \left( -\frac{\ln \left( \frac{S_t}{K} \right)+(r+\frac{1}{2} \sigma^2)(T-t)}{\sigma\sqrt{T-t}}\right)
+\end{align*}$$
+
+
+# Asset or nothing - ABM (1)
+
+## Call
+
+Suppose the asset price process $(S_t)+{t \geq 0}$ follows an arithmetic Brownian motion:
+$$ \,d S_t = 0.05 \,d t + 0.3 \,d W_t^Q,$$
+where $W_t^Q$ is a standard Brownian motion on a risk-neutral probability space, denoted by $(\omega,\mathcal{F},\mathcal{Q})$. Asset-or-nothing call option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$.
+
+Compute the fair price when $t = 0.5$, $T = 1$, $S_t = 9$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ for the fair price of the option? 
+
+$$\,dS_t =\mu \,dt + \sigma\,d W_t^{\mathcal{Q}}$$
+
+>Integrating both sides from $t$ to $T$, we have:
+$$\begin{align*}
+\int_t^T \,d S_s &= \int_t^T \mu \,d s + \int_t^T \sigma \,d W_s^{\mathcal{Q}} \\
+\rightarrow S_T &= S_t + \mu(T-t) + \sigma(W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}}) \\
+&\sim \mathcal{N}(S_t+\mu(T-t),\sigma^2(T-t))
+\end{align*}$$
+
+>The probability density function of $S_T|S_t$ can be written as: 
+$$f_{S_T|s_t}(x) = \frac{1}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}}$$
+where $m=S_t+\mu(T-t)$ and $v^2=\sigma^2(T-t)$
+
+>From Feynman-Kac formula, we have:
+$$C_a(S_t,t) = e^{-r(T-t)}E^{\mathcal{Q}}[S_T \mathcal{I}_{S_T > K}|\mathcal{F}_t],$$
+where $E^{\mathcal{Q}}$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t > K\\
+        0 & \text{if } S_t \leq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain:
+$$\begin{align*}
+C_a(S_t,t) &= e^{−r(T−t)}E^Q [S_T \mathcal{I}_{S_T > K}  | \mathcal{F}_t] \\
+&= e^{−r(T−t)} \int_K^{\infty} xf_{S_T|s_t}(x) \,d x \\
+&= e^{−r(T−t)} \int_K^{\infty} \frac{x}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \,d x \\
+&= e^{-r(T-t)} \int_{K}^{\infty} \frac{x}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \,dx \\
+&= e^{-r(T-t)} \int_{K}^{\infty} \frac{x}{\sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \frac{1}{v}\,dx
+\end{align*}$$
+
+>Using the variable transformation $u = \frac{x-m}{v}$ then $x=m+uv$ and $\,du = \frac{1}{v} \,dx$, we obtain:
+$$\begin{align*}
+C_a(S_t,t) &= e^{-r(T-t)} \int_{\frac{K-m}{v}}^{\infty} \frac{m+uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= e^{-r(T-t)}\int_{\frac{K-m}{v}}^{\infty} \frac{m}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du + e^{-r(T-t)}\int_{\frac{K-m}{v}}^{\infty} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du   \\
+&= e^{-r(T-t)}(I_1 + I_2)
+\end{align*}$$
+
+>With the notation 
+$$\begin{align*}
+m&=S_t+\mu(T-t) \\
+v^2&=\sigma^2(T-t) \\
+v&=\sigma\sqrt{T-t} \\
+d &= \frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \\
+N(x) &= \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}x^2} \,dx \\
+N'(x) &=\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}x^2}
+\end{align*}$$
+
+>We have
+$$\begin{align*}
+I_1 &= \int_{\frac{K-m}{v}}^{\infty} \frac{m}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&=  m \cdot \frac{1}{\sqrt{2\pi}}  \int_{-\infty}^{-\frac{K-m}{v}} e^{-\frac{u^2}{2}} \,du \\
+&=  m \cdot N \left( -\frac{K-m}{v} \right) \\
+&=  (S_t+\mu(T-t)) \cdot N \left( -\frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) \\
+I_2 &= \int_{\frac{K-m}{v}}^{\infty} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= v\int_{\frac{K-m}{v}}^{\infty} \frac{1}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,d \left(\frac{u^2}{2} \right) \\
+&= v\int_{\frac{1}{2} \left(\frac{K-m}{v} \right)^2}^{\infty} \frac{1}{\sqrt{2\pi}} e^{-x} \,dx  \\
+&= v \cdot \frac{1}{\sqrt{2\pi}} \cdot (-e^{-x}) \Biggr|_{\frac{1}{2} \left(\frac{K-m}{v} \right)^2}^{\infty}  \\
+&= \sigma\sqrt{T-t} \cdot \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{1}{2} \left(\frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right)^2} \\
+&=  \sigma \sqrt{T-t} \cdot N' \left( \frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) \\
+C_a(S_t,t) &=  e^{-r(T-t)}(I_1 + I_2) \\
+&= e^{-r(T-t)} \left( (S_t+\mu(T-t)) \cdot N \left( -\frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) + \sigma \sqrt{T-t} \cdot N' \left( \frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) \right)
+\end{align*}$$
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t) &= e^{-r(T-t)} \left( (S_t+\mu(T-t)) \cdot N \left( -\frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) + \sigma \sqrt{T-t} \cdot N' \left( \frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) \right)
+\end{align*}$$
+
+## Put
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$ \,d S_t = 0.05 \,d t + 0.3 \,d W_t^Q,$$
+where $W_t^Q$ is a standard Brownian motion on a risk-neutral probability space, denoted by $(\omega,\mathcal{F},\mathcal{P})$. Asset-or-nothing put option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 7$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of t,T and St and then compute the fair price.
+
+Compute the fair price when $t = 0.5$, $T = 1$, $S_t = 9$.
+
+$$\,dS_t =\mu \,dt + \sigma\,d W_t^{\mathcal{Q}}$$
+
+>Integrating both sides from $t$ to $T$, we have:
+$$\begin{align*}
+\int_t^T \,d S_s &= \int_t^T \mu \,d s + \int_t^T \sigma \,d W_s^{\mathcal{Q}} \\
+\rightarrow S_T &= S_t + \mu(T-t) + \sigma(W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}}) \\
+&\sim \mathcal{N}(S_t+\mu(T-t),\sigma^2(T-t))
+\end{align*}$$
+
+>The probability density function of $S_T|S_t$ can be written as: 
+$$f_{S_T|s_t}(x) = \frac{1}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}}$$
+where $m=S_t+\mu(T-t)$ and $v^2=\sigma^2(T-t)$
+
+>From Feynman-Kac formula, we have:
+$$P_a(S_t,t) = e^{-r(T-t)}E^{\mathcal{Q}}[S_T \mathcal{I}_{S_T < K}|\mathcal{F}_t],$$
+where $E^{\mathcal{Q}}$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t < K\\
+        0 & \text{if } S_t \geq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain:
+$$\begin{align*}
+P_a(S_t,t) &= e^{−r(T−t)}E^Q [S_T \mathcal{I}_{S_T < K}  | \mathcal{F}_t] \\
+&= e^{−r(T−t)} \int_{-\infty}^{K} xf_{S_T|s_t}(x) \,d x \\
+&= e^{−r(T−t)} \int_{-\infty}^{K} \frac{x}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \,d x \\
+&= e^{-r(T-t)} \int_{-\infty}^{K} \frac{x}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \,dx \\
+&= e^{-r(T-t)} \int_{-\infty}^{K} \frac{x}{\sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \frac{1}{v}\,dx
+\end{align*}$$
+
+>Using the variable transformation $u = \frac{x-m}{v}$ then $x=m+uv$ and $\,du = \frac{1}{v} \,dx$, we obtain:
+$$\begin{align*}
+P_a(S_t,t) &= e^{-r(T-t)} \int_{-\infty}^{\frac{K-m}{v}} \frac{m+uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= e^{-r(T-t)}\int_{-\infty}^{\frac{K-m}{v}} \frac{m}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du + e^{-r(T-t)}\int_{-\infty}^{\frac{K-m}{v}} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du   \\
+&= e^{-r(T-t)}(I_1 + I_2)
+\end{align*}$$
+
+>With the notation 
+$$\begin{align*}
+m&=S_t+\mu(T-t) \\
+v^2&=\sigma^2(T-t) \\
+v&=\sigma\sqrt{T-t} \\
+d &= \frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \\
+N(x) &= \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}x^2} \,dx \\
+N'(x) &=\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}x^2}
+\end{align*}$$
+
+>We have
+$$\begin{align*}
+I_1 &= \int_{-\infty}^{\frac{K-m}{v}} \frac{m}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&=  m \cdot N \left( \frac{K-m}{v} \right) \\
+&=  (S_t+\mu(T-t)) N \left( \frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) \\
+I_2 &= \int_{-\infty}^{\frac{K-m}{v}} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= -v\int_{-\infty}^{\frac{K-m}{v}} \frac{1}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,d \left(-\frac{u^2}{2} \right) \\
+&= -v\int_{-\infty}^{-\frac{1}{2} \left(\frac{K-m}{v} \right)^2} \frac{1}{\sqrt{2\pi}} e^{x} \,dx  \\
+&= -v \cdot \frac{1}{\sqrt{2\pi}} \cdot (e^{x}) \Biggr|_{-\infty}^{-\frac{1}{2} \left(\frac{K-m}{v} \right)^2}  \\
+&= -\sigma\sqrt{T-t} \cdot \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{1}{2} \left(\frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right)^2} \\
+&=  -\sigma \sqrt{T-t} \cdot N' \left( \frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) \\
+&=  -\sigma \sqrt{T-t} \cdot N' \left( -\frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) \\
+P_a(S_t,t) &=  e^{-r(T-t)}(I_1 + I_2) \\
+&= e^{-r(T-t)} \left( (S_t+\mu(T-t)) \cdot N \left( \frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) - \sigma \sqrt{T-t} \cdot N' \left( -\frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) \right)
+\end{align*}$$
+
+>Answer: The value of the put option is:
+$$\begin{align*}
+P(S_t,t) &= e^{-r(T-t)} \left( (S_t+\mu(T-t)) \cdot N \left( \frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) - \sigma \sqrt{T-t} \cdot N' \left( -\frac{K-(S_t+\mu(T-t))}{\sigma \sqrt{T-t}} \right) \right)
+\end{align*}$$
+
+# Asset or nothing - ABM (2)
+
+## Call
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$\,d S_t = 0.05 \,d t + 0.3 \,d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\omega,\mathcal{F},\mathcal{P})$. Asset-or-nothing call option parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ for the fair price of the option? 
+
+>
+$$\begin{align*}
+S_T&= e^{r(T-t)} S_t + \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}} \\
+& \sim \mathcal{N} \left(e^{r(T-t)} S_t ,  \left( \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}}\right)^2 \right) \\
+& \sim \mathcal{N} \left( e^{r(T-t)} S_t ,  \frac{\sigma^2}{2r}(e^{2r(T-t)}-1)  \right)
+\end{align*}$$
+
+>The probability density function of $S_T|S_t$ can be written as: 
+$$f_{S_T|s_t}(x) = \frac{1}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}}$$
+where $m=e^{r(T-t)} S_t$ and $v^2=\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)$
+
+>From Feynman-Kac formula, we have:
+$$C_a(S_t,t) = e^{-r(T-t)}E^{\mathcal{Q}}[S_T \mathcal{I}_{S_T > K}|\mathcal{F}_t],$$
+where $E^{\mathcal{Q}}$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t > K\\
+        0 & \text{if } S_t \leq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain:
+$$\begin{align*}
+C_a(S_t,t) &= e^{−r(T−t)}E^Q [S_T \mathcal{I}_{S_T > K}  | \mathcal{F}_t] \\
+&= e^{−r(T−t)} \int_K^{\infty} xf_{S_T|s_t}(x) \,d x \\
+&= e^{−r(T−t)} \int_K^{\infty} \frac{x}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \,d x \\
+&= e^{-r(T-t)} \int_{K}^{\infty} \frac{x}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \,dx \\
+&= e^{-r(T-t)} \int_{K}^{\infty} \frac{x}{\sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \frac{1}{v}\,dx
+\end{align*}$$
+
+>Using the variable transformation $u = \frac{x-m}{v}$ then $x=m+uv$ and $\,du = \frac{1}{v} \,dx$, we obtain:
+$$\begin{align*}
+C_a(S_t,t) &= e^{-r(T-t)} \int_{\frac{K-m}{v}}^{\infty} \frac{m+uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= e^{-r(T-t)}\int_{\frac{K-m}{v}}^{\infty} \frac{m}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du + e^{-r(T-t)}\int_{\frac{K-m}{v}}^{\infty} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du   \\
+&= e^{-r(T-t)}(I_1 + I_2)
+\end{align*}$$
+
+>With the notation 
+$$\begin{align*}
+m&=e^{r(T-t)} S_t \\
+v^2&=\frac{\sigma^2}{2r}(e^{2r(T-t)}-1) \\
+v&=\sigma \frac{e^{2r(T-t)}-1}{2r} \\
+d &= \frac{K-e^{r(T-t)} S_t}{\sigma \frac{e^{2r(T-t)}-1}{2r}} \\
+N(x) &= \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}x^2} \,dx \\
+N'(x) &=\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}x^2}
+\end{align*}$$
+
+>We have
+$$\begin{align*}
+I_1 &= \int_{\frac{K-m}{v}}^{\infty} \frac{m}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&=  m \cdot \frac{1}{\sqrt{2\pi}}  \int_{-\infty}^{-\frac{K-m}{v}} e^{-\frac{u^2}{2}} \,du \\
+&=  m \cdot N \left( -\frac{K-m}{v} \right) \\
+&=  e^{r(T-t)} S_t \cdot N \left( -\frac{K-e^{r(T-t)} S_t}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) \\
+I_2 &= \int_{\frac{K-m}{v}}^{\infty} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= v\int_{\frac{K-m}{v}}^{\infty} \frac{1}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,d \left(\frac{u^2}{2} \right) \\
+&= v\int_{\frac{1}{2} \left(\frac{K-m}{v} \right)^2}^{\infty} \frac{1}{\sqrt{2\pi}} e^{-x} \,dx  \\
+&= v \cdot \frac{1}{\sqrt{2\pi}} \cdot (-e^{-x}) \Biggr|_{\frac{1}{2} \left(\frac{K-m}{v} \right)^2}^{\infty}  \\
+&= \sigma\sqrt{T-t} \cdot \frac{1}{\sqrt{2\pi}} \cdot e^{-\frac{1}{2} \left(\frac{K-(e^{r(T-t)} S_t)}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right)^2} \\
+&=  \sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}} \cdot N' \left( \frac{K-(e^{r(T-t)} S_t)}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) \\
+C_a(S_t,t) &=  e^{-r(T-t)}(I_1 + I_2) \\
+&= e^{-r(T-t)} \left( e^{r(T-t)} S_t \cdot N \left( -\frac{K-e^{r(T-t)} S_t}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) + \sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}} \cdot N' \left( \frac{K-e^{r(T-t)} S_t}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) \right)
+\end{align*}$$
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t) &= e^{-r(T-t)} \left( e^{r(T-t)} S_t \cdot N \left( -\frac{K-e^{r(T-t)} S_t}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) + \sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}} \cdot N' \left( \frac{K-e^{r(T-t)} S_t}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) \right)
+\end{align*}$$
+
+## Put
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows an arithmetic Brownian motion:
+$$\,d S_t = 0.05 \,d t + 0.3 \,d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\omega,\mathcal{F},\mathcal{P})$. Asset-or-nothing put option parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ for the fair price of the option? 
+
+Compute the fair price when $t = 0.5$, $T = 1$, $S_t = 9$.
+
+>
+$$\begin{align*}
+S_T&= e^{r(T-t)} S_t + \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}} \\
+& \sim \mathcal{N} \left(e^{r(T-t)} S_t ,  \left( \int_t^T \sigma e^{r(T-u)} \,d W_t^{\mathcal{Q}}\right)^2 \right) \\
+& \sim \mathcal{N} \left( e^{r(T-t)} S_t ,  \frac{\sigma^2}{2r}(e^{2r(T-t)}-1)  \right)
+\end{align*}$$
+
+>The probability density function of $S_T|S_t$ can be written as: 
+$$f_{S_T|s_t}(x) = \frac{1}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}}$$
+where $m=e^{r(T-t)} S_t$ and $v^2=\frac{\sigma^2}{2r}(e^{2r(T-t)}-1)$
+
+>From Feynman-Kac formula, we have:
+$$P_a(S_t,t) = e^{-r(T-t)}E^{\mathcal{Q}}[S_T \mathcal{I}_{S_T < K}|\mathcal{F}_t],$$
+where $E^{\mathcal{Q}}$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{S_T} = 
+    \begin{cases}
+        1 & \text{if } S_t < K\\
+        0 & \text{if } S_t \geq K
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain:
+$$\begin{align*}
+P_a(S_t,t) &= e^{−r(T−t)}E^Q [S_T \mathcal{I}_{S_T < K}  | \mathcal{F}_t] \\
+&= e^{−r(T−t)} \int_{-\infty}^{K} xf_{S_T|s_t}(x) \,d x \\
+&= e^{−r(T−t)} \int_{-\infty}^{K} \frac{x}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \,d x \\
+&= e^{-r(T-t)} \int_{-\infty}^{K} \frac{x}{v \sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \,dx \\
+&= e^{-r(T-t)} \int_{-\infty}^{K} \frac{x}{\sqrt{2\pi}} e^{-\frac{(x-m)^2}{2v^2}} \frac{1}{v}\,dx
+\end{align*}$$
+
+>Using the variable transformation $u = \frac{x-m}{v}$ then $x=m+uv$ and $\,du = \frac{1}{v} \,dx$, we obtain:
+$$\begin{align*}
+P_a(S_t,t) &= e^{-r(T-t)} \int_{-\infty}^{\frac{K-m}{v}} \frac{m+uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= e^{-r(T-t)}\int_{-\infty}^{\frac{K-m}{v}} \frac{m}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du + e^{-r(T-t)}\int_{-\infty}^{\frac{K-m}{v}} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du   \\
+&= e^{-r(T-t)}(I_1 + I_2)
+\end{align*}$$
+
+>With the notation 
+$$\begin{align*}
+m&=e^{r(T-t)} S_t \\
+v^2&=\frac{\sigma^2}{2r}(e^{2r(T-t)}-1) \\
+v&=\sigma \frac{e^{2r(T-t)}-1}{2r} \\
+d &= \frac{K-e^{r(T-t)} S_t}{\sigma \frac{e^{2r(T-t)}-1}{2r}} \\
+N(x) &= \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}x^2} \,dx \\
+N'(x) &=\frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}x^2}
+\end{align*}$$
+
+>We have
+$$\begin{align*}
+I_1 &= \int_{-\infty}^{\frac{K-m}{v}} \frac{m}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&=  m \cdot N \left( \frac{K-m}{v} \right) \\
+&=  e^{r(T-t)} S_t \cdot N \left( \frac{K-e^{r(T-t)} S_t}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) \\
+I_2 &= \int_{-\infty}^{\frac{K-m}{v}} \frac{uv}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,du \\
+&= -v\int_{-\infty}^{\frac{K-m}{v}} \frac{1}{\sqrt{2\pi}} e^{-\frac{u^2}{2}} \,d \left(-\frac{u^2}{2} \right) \\
+&= -v\int_{-\infty}^{-\frac{1}{2} \left(\frac{K-m}{v} \right)^2} \frac{1}{\sqrt{2\pi}} e^{x} \,dx  \\
+&= -v \cdot \frac{1}{\sqrt{2\pi}} \cdot (e^{x}) \Biggr|_{-\infty}^{-\frac{1}{2} \left(\frac{K-m}{v} \right)^2}  \\
+&=  -\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}} \cdot N' \left( \frac{K-(e^{r(T-t)} S_t)}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) \\
+&=  -\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}} \cdot N' \left( -\frac{K-(e^{r(T-t)} S_t)}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) \\
+P_a(S_t,t) &=  e^{-r(T-t)}(I_1 + I_2) \\
+&= e^{-r(T-t)} \left( e^{r(T-t)} S_t \cdot N \left( \frac{K-e^{r(T-t)} S_t}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) - \sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}} \cdot N' \left( -\frac{K-e^{r(T-t)} S_t}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) \right)
+\end{align*}$$
+
+>Answer: The value of the put option is:
+$$\begin{align*}
+P(S_t,t) &= e^{-r(T-t)} \left( e^{r(T-t)} S_t \cdot N \left( \frac{K-e^{r(T-t)} S_t}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) - \sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}} \cdot N' \left( -\frac{K-e^{r(T-t)} S_t}{\sigma\sqrt{\frac{e^{2r(T-t)}-1}{2r}}} \right) \right)
+\end{align*}$$
+
+# American Digital - GBM 
+
+## Call
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t =0.15 S_t \,dt + 0.4 S_t \,d W_t^{\mathcal{P}},$$
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega,\mathcal{F},\mathcal{P})$. An American digital call option written on the stock with parameters: exercise price $K = 9$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.1$, $t = 0.5$, $T = 1$, $S_t = 8$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ and then compute the fair price.
+
+>
+$$\begin{align*}
+S_T &= e^{\ln S_t + (r-\frac{1}{2}\sigma^2)(T-t) + \sigma (W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}
+\end{align*}$$
+
+>Let $\tau$ be the waiting time (after $t$) for the asset price hits $K$ from below. The payoff of this option is \$1 at $\tau$, if $\tau \leq T − t$ and $0$ if $\tau > T − t$. Mathematically, $\tau$ can be expressed as:
+$$\begin{align*}
+\tau &= \inf\{u-t \geq 0 | S_u = K\} \\
+&= \inf\{u-t \geq 0 | e^{\ln S_t + (r-\frac{1}{2}\sigma^2)(u-t) + \sigma (W_u^{\mathcal{Q}}-W_t^{\mathcal{Q}})} = K\} \\
+&= \inf\{u-t \geq 0 |W_u^{\mathcal{Q}}-W_t^{\mathcal{Q}} = \frac{1}{\sigma} \ln \frac{K}{S_t} - \frac{1}{\sigma}  (r-\frac{1}{2}\sigma^2) \cdot (u-t)\} \\
+\end{align*}$$
+
+>As $W_u^{\mathcal{Q}}-W_t^{\mathcal{Q}} \stackrel{\text{d}}{=} W_{u-t}^{\mathcal{Q}}$, the distribution of $\tau$ is identical with that of the first passage time the Brownian motion $W_{u-t}^{\mathcal{Q}}$ hits the slope line $a+b(u-t)$, where $a = \frac{1}{\sigma} \ln \frac{K}{S_t}>0$ and $b = - \frac{1}{\sigma}  (r-\frac{1}{2}\sigma^2)$. The probability density function of $\tau$ is:
+$$f_{\tau}(s) = \frac{a}{\sqrt{2\pi s^3}}e^{-\frac{(a+bs)^2}{2s}}$$
+
+>Under the risk-neutral measure, the option price is the expected value of the discounted payoff. Thus, the option price at time $t$, denoted by $C_d(S_t,t)$, computed by:
+$$C_d(S_t,t) = E^{\mathcal{Q}}[e^{-rt} \mathcal{I}_{\tau \leq T-t}|\mathcal{F_t} ]$$
+where $E^{\mathcal{Q}}[\cdot ]$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{\tau \leq T-t} = 
+    \begin{cases}
+        1 & \text{if } \tau \leq T-t\\
+        0 & \text{if } \tau > T-t
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain:
+$$\begin{align*}
+C_d(S_t,t) &= \int_0^{T-t} e^{-rs} f_{\tau} (s) \,d s \\ 
+&= \int_0^{T-t} e^{-rs} \frac{a}{\sqrt{2\pi s^3}}e^{-\frac{(a+bs)^2}{2s}} \,d s \\
+&= \int_0^{T-t} \frac{a}{\sqrt{2\pi s^3}}e^{-rs-\frac{(a+bs)^2}{2s}} \,d s \\
+&= \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a}{\sqrt{s^3}}e^{-ab-\frac{(2r+b^2)s^2+a^2}{2s}} \,d s
+\end{align*}$$
+
+>With $c = \sqrt{2r+b^2}$, we have
+$$\begin{align*}
+C_d(S_t,t) &= e^{-ab} \cdot \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a}{\sqrt{s^3}}e^{-\frac{c^2s^2+a^2}{2s}} \,d s \\
+&= e^{-ab} \cdot \left( \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a-cs}{2\sqrt{s^3}}e^{-\frac{1}{2s}((a+cs)^2-2acs)} \,d s + \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a+cs}{2\sqrt{s^3}}e^{-\frac{1}{2s}((a-cs)^2+2acs)} \,d s \right)\\
+&= e^{-ab+ac} \cdot  \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a-cs}{2\sqrt{s^3}}e^{-\frac{1}{2} \left( \frac{a+cs}{\sqrt{s}}\right)^2} \,d s + e^{-ab-ac} \cdot  \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a+cs}{2\sqrt{s^3}}e^{-\frac{1}{2} \left( \frac{a-cs}{\sqrt{s}}\right)^2} \,d s \\
+\end{align*}$$
+
+>Variable substitution
+$$\begin{align*}
+v(s)=-\frac{a+cs}{\sqrt{s}} \\
+\rightarrow \begin{cases}
+\,d v = \frac{a-cs}{2\sqrt{s^3}} \,d s \\
+\lim_{s \to 0} v = -\infty \\
+v(T-t)=-\frac{a+c(T-t)}{\sqrt{T-t}} \\
+\end{cases}
+\end{align*}$$
+$$\begin{align*}
+w(s)=-\frac{a-cs}{\sqrt{s}} \\
+\rightarrow \begin{cases}
+\,d w = \frac{a+cs}{2\sqrt{s^3}} \,d s \\
+\lim_{s \to 0} w = -\infty \\
+w(T-t)=-\frac{a-c(T-t)}{\sqrt{T-t}} \\
+\end{cases}
+\end{align*}$$
+
+>$$\begin{align*}
+I &= e^{-ab+ac} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{-\frac{a+c(T-t)}{\sqrt{T-t}}} e^{-\frac{1}{2}v^2} \,dv + e^{-ab-ac} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{-\frac{a-c(T-t)}{\sqrt{T-t}}} e^{-\frac{1}{2}w^2} \,dw \\
+&= e^{-ab+ac} \cdot N \left(-\frac{a+c(T-t)}{\sqrt{T-t}} \right) + e^{-ab-ac} \cdot N \left(-\frac{a-c(T-t)}{\sqrt{T-t}} \right)
+\end{align*}$$
+where $N(x) = \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}y^2}\,dy$
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t) &= e^{-ab+ac} \cdot N \left(-\frac{a+c(T-t)}{\sqrt{T-t}} \right) + e^{-ab-ac} \cdot N \left(-\frac{a-c(T-t)}{\sqrt{T-t}} \right)
+\end{align*}$$
+where 
+$a = \frac{1}{\sigma} \ln \frac{K}{S_t}>0, b = - \frac{1}{\sigma}  (r-\frac{1}{2}\sigma^2), c = \sqrt{2r+b^2}$
+
+## Put
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t =0.15 S_t \,dt + 0.4 S_t \,d W_t^{\mathcal{P}},$$
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega,\mathcal{F},\mathcal{P})$. An American digital put option written on the stock with parameters: exercise price $K = 10$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.1$, $t = 0.5$, $T = 1$, $S_t = 12$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ and then compute the fair price.
+
+>
+$$\begin{align*}
+S_T &= e^{\ln S_t + (r-\frac{1}{2}\sigma^2)(T-t) + \sigma (W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}
+\end{align*}$$
+
+>Let $\tau$ be the waiting time (after $t$) for the asset price hits $K$ from below. The payoff of this option is \$1 at $\tau$, if $\tau \leq T − t$ and $0$ if $\tau > T − t$. Mathematically, $\tau$ can be expressed as:
+$$\begin{align*}
+\tau &= \inf\{u-t \geq 0 | S_u = K\} \\
+&= \inf\{u-t \geq 0 | e^{\ln S_t + (r-\frac{1}{2}\sigma^2)(u-t) + \sigma (W_u^{\mathcal{Q}}-W_t^{\mathcal{Q}})} = K\} \\
+&= \inf\{u-t \geq 0 |W_u^{\mathcal{Q}}-W_t^{\mathcal{Q}} = \frac{1}{\sigma} \ln \frac{K}{S_t} - \frac{1}{\sigma}  (r-\frac{1}{2}\sigma^2) \cdot (u-t)\} \\
+\end{align*}$$
+
+>As $W_u^{\mathcal{Q}}-W_t^{\mathcal{Q}} \stackrel{\text{d}}{=} W_{u-t}^{\mathcal{Q}}$, the distribution of $\tau$ is identical with that of the first passage time the Brownian motion $W_{u-t}^{\mathcal{Q}}$ hits the slope line $a+b(u-t)$, where $a = \frac{1}{\sigma} \ln \frac{K}{S_t}<0$ and $b = - \frac{1}{\sigma}  (r-\frac{1}{2}\sigma^2)$. The probability density function of $\tau$ is:
+$$f_{\tau}(s) = \frac{-a}{\sqrt{2\pi s^3}}e^{-\frac{(a+bs)^2}{2s}}$$
+
+>Under the risk-neutral measure, the option price is the expected value of the discounted payoff. Thus, the option price at time $t$, denoted by $P_d(S_t,t)$, computed by:
+$$P_d(S_t,t) = E^{\mathcal{Q}}[e^{-rt} \mathcal{I}_{\tau \leq T-t}|\mathcal{F_t} ]$$
+where $E^{\mathcal{Q}}[\cdot ]$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{\tau \leq T-t} = 
+    \begin{cases}
+        1 & \text{if } \tau \leq T-t\\
+        0 & \text{if } \tau > T-t
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain:
+$$\begin{align*}
+P_d(S_t,t) &= \int_0^{T-t} e^{-rs} f_{\tau} (s) \,d s \\ 
+&= \int_0^{T-t} e^{-rs} \frac{-a}{\sqrt{2\pi s^3}}e^{-\frac{(a+bs)^2}{2s}} \,d s \\
+&= \int_0^{T-t} \frac{-a}{\sqrt{2\pi s^3}}e^{-rs-\frac{(a+bs)^2}{2s}} \,d s \\
+&= \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{-a}{\sqrt{s^3}}e^{-ab-\frac{(2r+b^2)s^2+a^2}{2s}} \,d s
+\end{align*}$$
+
+>With $c = \sqrt{2r+b^2}$, we have
+$$\begin{align*}
+P_d(S_t,t) &= e^{-ab} \cdot \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{-a}{\sqrt{s^3}}e^{-\frac{c^2s^2+a^2}{2s}} \,d s \\
+&= e^{-ab} \cdot \left( \frac{1}{\sqrt{2\pi}} \int_0^{T-t} -\frac{a-cs}{2\sqrt{s^3}}e^{-\frac{1}{2s}((a+cs)^2-2acs)} \,d s + \frac{1}{\sqrt{2\pi}} \int_0^{T-t} -\frac{a+cs}{2\sqrt{s^3}}e^{-\frac{1}{2s}((a-cs)^2+2acs)} \,d s \right)\\
+&= e^{-ab+ac} \cdot  \frac{1}{\sqrt{2\pi}} \int_0^{T-t} -\frac{a-cs}{2\sqrt{s^3}}e^{-\frac{1}{2} \left( \frac{a+cs}{\sqrt{s}}\right)^2} \,d s + e^{-ab-ac} \cdot  \frac{1}{\sqrt{2\pi}} \int_0^{T-t} -\frac{a+cs}{2\sqrt{s^3}}e^{-\frac{1}{2} \left( \frac{a-cs}{\sqrt{s}}\right)^2} \,d s \\
+\end{align*}$$
+
+>Variable substitution
+$$\begin{align*}
+v(s)=\frac{a+cs}{\sqrt{s}} \\
+\rightarrow \begin{cases}
+\,d v = -\frac{a-cs}{2\sqrt{s^3}} \,d s \\
+\lim_{s \to 0} v = -\infty \\
+v(T-t)=\frac{a+c(T-t)}{\sqrt{T-t}} \\
+\end{cases}
+\end{align*}$$
+$$\begin{align*}
+w(s)=\frac{a-cs}{\sqrt{s}} \\
+\rightarrow \begin{cases}
+\,d w = -\frac{a+cs}{2\sqrt{s^3}} \,d s \\
+\lim_{s \to 0} w = -\infty \\
+w(T-t)=\frac{a-c(T-t)}{\sqrt{T-t}} \\
+\end{cases}
+\end{align*}$$
+
+>$$\begin{align*}
+I &= e^{-ab+ac} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\frac{a+c(T-t)}{\sqrt{T-t}}} e^{-\frac{1}{2}v^2} \,dv + e^{-ab-ac} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\frac{a-c(T-t)}{\sqrt{T-t}}} e^{-\frac{1}{2}w^2} \,dw \\
+&= e^{-ab+ac} \cdot N \left(\frac{a+c(T-t)}{\sqrt{T-t}} \right) + e^{-ab-ac} \cdot N \left(\frac{a-c(T-t)}{\sqrt{T-t}} \right)
+where $N(x) = \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}y^2}\,dy$
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t) &= e^{-ab+ac} \cdot N \left(\frac{a+c(T-t)}{\sqrt{T-t}} \right) + e^{-ab-ac} \cdot N \left(\frac{a-c(T-t)}{\sqrt{T-t}} \right)
+\end{align*}$$
+where 
+$a = \frac{1}{\sigma} \ln \frac{K}{S_t}>0, b = - \frac{1}{\sigma}  (r-\frac{1}{2}\sigma^2), c = \sqrt{2r+b^2}$
+
+# American Digital - ABM 
+
+## Call
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t =0.05 \,dt + 0.3 \,d W_t^{\mathcal{P}},$$
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega,\mathcal{F},\mathcal{P})$. An American digital call option written on the stock with parameters: exercise price $K = 10$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 9$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ and then compute the fair price.
+
+>
+$$S_T = S_t + \mu(T-t) + \sigma(W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}})$$
+
+>Let $\tau$ be the waiting time (after $t$) for the asset price hits $K$ from below. The payoff of this option is \$1 at $\tau$, if $\tau \leq T − t$ and $0$ if $\tau > T − t$. Mathematically, $\tau$ can be expressed as:
+$$\begin{align*}
+\tau &= \inf\{u-t \geq 0 | S_u = K\} \\
+&= \inf\{u-t \geq 0 | S_t + \mu(u-t) + \sigma(W_u^{\mathcal{Q}} - W_t^{\mathcal{Q}}) = K\} \\
+&= \inf\{u-t \geq 0 |W_u^{\mathcal{Q}}-W_t^{\mathcal{Q}} = \frac{1}{\sigma}  (K-S_t) - \frac{\mu}{\sigma} \cdot (u-t)\} \\
+\end{align*}$$
+
+>As $W_u^{\mathcal{Q}}-W_t^{\mathcal{Q}} \stackrel{\text{d}}{=} W_{u-t}^{\mathcal{Q}}$, the distribution of $\tau$ is identical with that of the first passage time the Brownian motion $W_{u-t}^{\mathcal{Q}}$ hits the slope line $a+b(u-t)$, where $a = \frac{1}{\sigma}  (K-S_t)>0$ and $b = - \frac{\mu}{\sigma}$. The probability density function of $\tau$ is:
+$$f_{\tau}(s) = \frac{a}{\sqrt{2\pi s^3}}e^{-\frac{(a+bs)^2}{2s}}$$
+
+>Under the risk-neutral measure, the option price is the expected value of the discounted payoff. Thus, the option price at time $t$, denoted by $C_d(S_t,t)$, computed by:
+$$C_d(S_t,t) = E^{\mathcal{Q}}[e^{-rt} \mathcal{I}_{\tau \leq T-t}|\mathcal{F_t} ]$$
+where $E^{\mathcal{Q}}[\cdot ]$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{\tau \leq T-t} = 
+    \begin{cases}
+        1 & \text{if } \tau \leq T-t\\
+        0 & \text{if } \tau > T-t
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain:
+$$\begin{align*}
+C_d(S_t,t) &= \int_0^{T-t} e^{-rs} f_{\tau} (s) \,d s \\ 
+&= \int_0^{T-t} e^{-rs} \frac{a}{\sqrt{2\pi s^3}}e^{-\frac{(a+bs)^2}{2s}} \,d s \\
+&= \int_0^{T-t} \frac{a}{\sqrt{2\pi s^3}}e^{-rs-\frac{(a+bs)^2}{2s}} \,d s \\
+&= \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a}{\sqrt{s^3}}e^{-ab-\frac{(2r+b^2)s^2+a^2}{2s}} \,d s
+\end{align*}$$
+
+>With $c = \sqrt{2r+b^2}$, we have
+$$\begin{align*}
+C_d(S_t,t) &= e^{-ab} \cdot \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a}{\sqrt{s^3}}e^{-\frac{c^2s^2+a^2}{2s}} \,d s \\
+&= e^{-ab} \cdot \left( \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a-cs}{2\sqrt{s^3}}e^{-\frac{1}{2s}((a+cs)^2-2acs)} \,d s + \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a+cs}{2\sqrt{s^3}}e^{-\frac{1}{2s}((a-cs)^2+2acs)} \,d s \right)\\
+&= e^{-ab+ac} \cdot  \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a-cs}{2\sqrt{s^3}}e^{-\frac{1}{2} \left( \frac{a+cs}{\sqrt{s}}\right)^2} \,d s + e^{-ab-ac} \cdot  \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{a+cs}{2\sqrt{s^3}}e^{-\frac{1}{2} \left( \frac{a-cs}{\sqrt{s}}\right)^2} \,d s \\
+\end{align*}$$
+
+>Variable substitution
+$$\begin{align*}
+v(s)=-\frac{a+cs}{\sqrt{s}} \\
+\rightarrow \begin{cases}
+\,d v = \frac{a-cs}{2\sqrt{s^3}} \,d s \\
+\lim_{s \to 0} v = -\infty \\
+v(T-t)=-\frac{a+c(T-t)}{\sqrt{T-t}} \\
+\end{cases}
+\end{align*}$$
+$$\begin{align*}
+w(s)=-\frac{a-cs}{\sqrt{s}} \\
+\rightarrow \begin{cases}
+\,d w = \frac{a+cs}{2\sqrt{s^3}} \,d s \\
+\lim_{s \to 0} w = -\infty \\
+w(T-t)=-\frac{a-c(T-t)}{\sqrt{T-t}} \\
+\end{cases}
+\end{align*}$$
+
+>$$\begin{align*}
+I &= e^{-ab+ac} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{-\frac{a+c(T-t)}{\sqrt{T-t}}} e^{-\frac{1}{2}v^2} \,dv + e^{-ab-ac} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{-\frac{a-c(T-t)}{\sqrt{T-t}}} e^{-\frac{1}{2}w^2} \,dw \\
+&= e^{-ab+ac} \cdot N \left(-\frac{a+c(T-t)}{\sqrt{T-t}} \right) + e^{-ab-ac} \cdot N \left(-\frac{a-c(T-t)}{\sqrt{T-t}} \right) \\
+&= e^{-ab+ac} \cdot N \left(d_1 \right) + e^{-ab-ac} \cdot N \left(d_2 \right)
+\end{align*}$$
+where $N(x) = \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}y^2}\,dy$ and $d_1 = -\frac{a+c(T-t)}{\sqrt{T-t}}$ and $d_2 = -\frac{a-c(T-t)}{\sqrt{T-t}}$.
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t) &= e^{-ab+ac} \cdot N \left(\frac{a+c(T-t)}{\sqrt{T-t}} \right) + e^{-ab-ac} \cdot N \left(\frac{a-c(T-t)}{\sqrt{T-t}} \right)
+\end{align*}$$
+where $a = \frac{1}{\sigma}  (K-S_t)>0, b = - \frac{\mu}{\sigma}, c = \sqrt{2r+b^2}$
+
+## Put
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t =0.05 \,dt + 0.3 \,d W_t^{\mathcal{P}},$$
+where $W_t^{\mathcal{P}}$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega,\mathcal{F},\mathcal{P})$. An American digital put option written on the stock with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$, $t = 0.5$, $T = 1$, $S_t = 10$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$,$T$ and $S_t$ and then compute the fair price.
+
+>
+$$S_T = S_t + \mu(T-t) + \sigma(W_T^{\mathcal{Q}} - W_t^{\mathcal{Q}})$$
+
+>Let $\tau$ be the waiting time (after $t$) for the asset price hits $K$ from below. The payoff of this option is \$1 at $\tau$, if $\tau \leq T − t$ and $0$ if $\tau > T − t$. Mathematically, $\tau$ can be expressed as:
+$$\begin{align*}
+\tau &= \inf\{u-t \geq 0 | S_u = K\} \\
+&= \inf\{u-t \geq 0 | S_t + \mu(u-t) + \sigma(W_u^{\mathcal{Q}} - W_t^{\mathcal{Q}}) = K\} \\
+&= \inf\{u-t \geq 0 |W_u^{\mathcal{Q}}-W_t^{\mathcal{Q}} = \frac{1}{\sigma}  (K-S_t) - \frac{\mu}{\sigma} \cdot (u-t)\} \\
+\end{align*}$$
+
+>As $W_u^{\mathcal{Q}}-W_t^{\mathcal{Q}} \stackrel{\text{d}}{=} W_{u-t}^{\mathcal{Q}}$, the distribution of $\tau$ is identical with that of the first passage time the Brownian motion $W_{u-t}^{\mathcal{Q}}$ hits the slope line $a+b(u-t)$, where $a = \frac{1}{\sigma}  (K-S_t)>0$ and $b = - \frac{\mu}{\sigma}$. The probability density function of $\tau$ is:
+$$f_{\tau}(s) = \frac{a}{\sqrt{2\pi s^3}}e^{-\frac{(a+bs)^2}{2s}}$$
+$$f_{\tau}(s) = \frac{-a}{\sqrt{2\pi s^3}}e^{-\frac{(a+bs)^2}{2s}}$$
+
+>Under the risk-neutral measure, the option price is the expected value of the discounted payoff. Thus, the option price at time $t$, denoted by $P_d(S_t,t)$, computed by:
+$$P_d(S_t,t) = E^{\mathcal{Q}}[e^{-rt} \mathcal{I}_{\tau \leq T-t}|\mathcal{F_t} ]$$
+where $E^{\mathcal{Q}}[\cdot ]$ is the expectation under the risk-neutral measure $\mathcal{Q}$ and 
+$$\begin{align*}
+\mathcal{I}_{\tau \leq T-t} = 
+    \begin{cases}
+        1 & \text{if } \tau \leq T-t\\
+        0 & \text{if } \tau > T-t
+    \end{cases}
+\end{align*}$$
+
+>Using the definition of conditional expectation, we obtain:
+$$\begin{align*}
+P_d(S_t,t) &= \int_0^{T-t} e^{-rs} f_{\tau} (s) \,d s \\ 
+&= \int_0^{T-t} e^{-rs} \frac{-a}{\sqrt{2\pi s^3}}e^{-\frac{(a+bs)^2}{2s}} \,d s \\
+&= \int_0^{T-t} \frac{-a}{\sqrt{2\pi s^3}}e^{-rs-\frac{(a+bs)^2}{2s}} \,d s \\
+&= \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{-a}{\sqrt{s^3}}e^{-ab-\frac{(2r+b^2)s^2+a^2}{2s}} \,d s
+\end{align*}$$
+
+>With $c = \sqrt{2r+b^2}$, we have
+$$\begin{align*}
+P_d(S_t,t) &= e^{-ab} \cdot \frac{1}{\sqrt{2\pi}} \int_0^{T-t} \frac{-a}{\sqrt{s^3}}e^{-\frac{c^2s^2+a^2}{2s}} \,d s \\
+&= e^{-ab} \cdot \left( \frac{1}{\sqrt{2\pi}} \int_0^{T-t} -\frac{a-cs}{2\sqrt{s^3}}e^{-\frac{1}{2s}((a+cs)^2-2acs)} \,d s + \frac{1}{\sqrt{2\pi}} \int_0^{T-t} -\frac{a+cs}{2\sqrt{s^3}}e^{-\frac{1}{2s}((a-cs)^2+2acs)} \,d s \right)\\
+&= e^{-ab+ac} \cdot  \frac{1}{\sqrt{2\pi}} \int_0^{T-t} -\frac{a-cs}{2\sqrt{s^3}}e^{-\frac{1}{2} \left( \frac{a+cs}{\sqrt{s}}\right)^2} \,d s + e^{-ab-ac} \cdot  \frac{1}{\sqrt{2\pi}} \int_0^{T-t} -\frac{a+cs}{2\sqrt{s^3}}e^{-\frac{1}{2} \left( \frac{a-cs}{\sqrt{s}}\right)^2} \,d s \\
+\end{align*}$$
+
+>Variable substitution
+$$\begin{align*}
+v(s)=\frac{a+cs}{\sqrt{s}} \\
+\rightarrow \begin{cases}
+\,d v = -\frac{a-cs}{2\sqrt{s^3}} \,d s \\
+\lim_{s \to 0} v = -\infty \\
+v(T-t)=\frac{a+c(T-t)}{\sqrt{T-t}} \\
+\end{cases}
+\end{align*}$$
+$$\begin{align*}
+w(s)=\frac{a-cs}{\sqrt{s}} \\
+\rightarrow \begin{cases}
+\,d w = -\frac{a+cs}{2\sqrt{s^3}} \,d s \\
+\lim_{s \to 0} w = -\infty \\
+w(T-t)=\frac{a-c(T-t)}{\sqrt{T-t}} \\
+\end{cases}
+\end{align*}$$
+
+>$$\begin{align*}
+I &= e^{-ab+ac} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\frac{a+c(T-t)}{\sqrt{T-t}}} e^{-\frac{1}{2}v^2} \,dv + e^{-ab-ac} \cdot \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\frac{a-c(T-t)}{\sqrt{T-t}}} e^{-\frac{1}{2}w^2} \,dw \\
+&= e^{-ab+ac} \cdot N \left(\frac{a+c(T-t)}{\sqrt{T-t}} \right) + e^{-ab-ac} \cdot N \left(\frac{a-c(T-t)}{\sqrt{T-t}} \right)
+\end{align*}$$
+where $N(x) = \int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}y^2}\,dy$
+
+>Answer: The value of the call option is:
+$$\begin{align*}
+C(S_t,t) &= e^{-ab+ac} \cdot N \left(\frac{a+c(T-t)}{\sqrt{T-t}} \right) + e^{-ab-ac} \cdot N \left(\frac{a-c(T-t)}{\sqrt{T-t}} \right)
+\end{align*}$$
+where $a = \frac{1}{\sigma}  (K-S_t)>0, b = - \frac{\mu}{\sigma}, c = \sqrt{2r+b^2}$
+
+# Other Options
+
+## $S_T - K$
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t = 0.05 S_t \,dt+0.3 S_t \,d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega, \mathcal{F}, \mathcal{P})$. Consider a European exotic option written on the stock that has pay-off $$\Phi(S_T)=S_T − K$$  at expiry, where $K$ is a constant and the current stock price $S_0 = 7$. The parameters are $K = 10$, maturity time $T > t$ (year), the risk-free interest rate is $r = 0.03$.
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ for the fair price of the option? 
+
+>$$\begin{align*}
+S_T &= e^{\ln S_t+(r-\frac{1}{2}\sigma^2)(T-t) + \sigma (W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})} \\
+& \sim \log N(\ln S_t+(r-\frac{1}{2}\sigma^2)(T-t),\sigma^2(T-t))
+\end{align*}$$
+
+>$$\begin{align*}
+C(S_t,t) &= e^{-r(T-t)} E^{\mathcal{Q}}\left[ S_T-K  | \mathcal{F}_t \right] \\
+&= e^{-r(T-t)} (e^{\ln S_t+(r-\frac{1}{2}\sigma^2)(T-t)+ \frac{1}{2}\sigma^2(T-t)}-K) \\
+&= S_t-Ke^{-r(T-t)}
+\end{align*}$$
+
+Compute the fair price when $t = 0.5$, $T = 1$, $S_t = 9$.
+
+>$$\begin{align*}
+C(S_t,t) &= S_t-Ke^{-r(T-t)} \\
+&= 9-10e^{-0.03(1-0.5)} \\
+&= -0.85
+\end{align*}$$
+
+## $\ln \left( \frac{S_T}{S_0} \right) − K$
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t = 0.05 S_t \,dt + 0.3 S_t \, d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega, \mathcal{F}, \mathcal{P})$. Consider a European exotic option written on the stock that has pay-off 
+$$\phi(S_T) = \ln \left( \frac{S_T}{S_0} \right) − K$$
+at expiry, where $K$ is a constant and the current stock price $S_0 = 7$. The parameters are
+$K = 1$, maturity time $T > t$ (year), the risk-free interest rate is
+$r =0.03$, $t =0.5$, $T = 1$, $S_t =9$.
+
+### Question 1 
+
+Using the 3-step CRR model to compute the option price.
+
+### Question 2
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ and then compute the fair price.
+
+>$$\begin{align*}
+S_T &= e^{\ln S_t+(r-\frac{1}{2}\sigma^2)(T-t) + \sigma (W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})} \\
+\rightarrow \ln \left( \frac{S_T}{S_0} \right) -K &= \ln S_t+(r-\frac{1}{2}\sigma^2)(T-t)-\ln S_0 - K
+\end{align*}$$
+
+>From the Feynman–Kac formula, we have:
+$$\begin{align*}
+C(S_t,t) &= e^{-r(T-t)} E^{\mathcal{Q}}\left[ \ln \left( \frac{S_T}{S_0} \right) -K  | \mathcal{F}_t \right] \\
+&= e^{-r(T-t)} \left(\ln S_t+(r-\frac{1}{2}\sigma^2)(T-t)-\ln S_0 - K \right) \\
+&= e^{-0.03(1-0.5)} \left(\ln 9+(0.03-\frac{1}{2} \cdot 0.3^2)(1-0.5)-\ln 7 - 1 \right) \\
+&= -0.74
+\end{align*}$$
+
+## $\phi(S_T) = \left( \ln \left( \frac{S_T}{S_0} \right) − K \right)^2$
+
+Suppose the asset price process $(S_t)_{t \geq 0}$ follows a geometric Brownian motion:
+$$\,d S_t = 0.05 S_t \,dt + 0.3 S_t \, d W_t^P,$$
+where $W_t^P$ is a standard Brownian motion on the real world probability space, denoted by $(\Omega, \mathcal{F}, \mathcal{P})$. Consider a European exotic option written on the stock that has pay-off 
+$$\phi(S_T) = \left( \ln \left( \frac{S_T}{S_0} \right) − K \right)^2$$
+at expiry, where $K$ is a constant and the current stock price $S_0 = 7$. The parameters are
+$K = 1$, maturity time $T > t$ (year), the risk-free interest rate is
+$r =0.03$, $t =0.5$, $T = 1$, $S_t =9$.
+
+### Question 1 
+
+Using the 3-step CRR model to compute the option price.
+
+### Question 2 
+
+Use the Monte Carlo method to compute the option price.
+
+### Question 3 
+
+Under the Black-Scholes framework, using the probabilistic approach to derive the formula in terms of $t$, $T$ and $S_t$ and then compute the fair price.
+
+>$$S_T = e^{\ln S_t+(r-\frac{1}{2}\sigma^2)(T-t) + \sigma (W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}})}$$
+
+>$$\begin{align*}
+\left[ \ln \left( \frac{S_T}{S_0} \right) -K \right]^2 &= \left[ \ln \left( S_T \right) -(\ln \left( S_0 \right)+K) \right]^2 \\
+&= \ln^2 \left( S_T \right) -2 \ln \left( S_T \right)(\ln \left( S_0 \right)+K) + (\ln \left( S_0 \right)+K)^2 \\
+\end{align*}$$
+
+>
+$$\begin{align*}
+C(S_t,t) &= e^{-r(T-t)} E^{\mathcal{Q}}\left[ \left( \ln \left( \frac{S_T}{S_0} \right) -K \right)^2  | \mathcal{F}_t \right] \\
+&= e^{-r(T-t)} \left[ E^{\mathcal{Q}} \left(\ln^2 \left( S_T \right) -2 \cdot \ln \left( S_T \right) \cdot (\ln \left( S_0 \right)+K)  \right | \mathcal{F}_t)+(\ln \left( S_0 \right)+K)^2 \right] \\
+&= e^{-r(T-t)} \left[ E^{\mathcal{Q}} \left(\left( \ln S_t+(r-\frac{1}{2}\sigma^2)(T-t) + \sigma (W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}}) \right)^2 -2 \cdot \left( \ln S_t+(r-\frac{1}{2}\sigma^2)(T-t) + \sigma (W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}}) \right) \cdot (\ln \left( S_0 \right)+K)  \right) +(\ln \left( S_0 \right)+K)^2 \right] \\
+&= e^{-r(T-t)} \left[ E^{\mathcal{Q}} \left(\left( \ln S_t+(r-\frac{1}{2}\sigma^2)(T-t) + \sigma (W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}}) \right)^2 \right) -2 \cdot (\ln \left( S_0 \right)+K) \cdot E^{\mathcal{Q}}\left( \ln S_t+(r-\frac{1}{2}\sigma^2)(T-t) + \sigma (W_T^{\mathcal{Q}}-W_t^{\mathcal{Q}}) \right) \right]  \\
+&= e^{-r(T-t)} \left[ \sigma^2(T-t) + (\ln S_t+(r-\frac{1}{2}\sigma^2)(T-t))^2 -2 \cdot (\ln \left( S_0 \right)+K) \cdot \left( \ln S_t+(r-\frac{1}{2}\sigma^2)(T-t)  \right)+(\ln \left( S_0 \right)+K)^2 \right]  \\
+&= 0.60
+\end{align*}$$
+

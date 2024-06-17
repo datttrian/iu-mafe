@@ -1,0 +1,55 @@
+<style>
+
+body {
+  font-family: "Georgia";
+  text-align: justify;
+}
+
+p {
+  font-family: "Georgia";
+  text-indent: 30px;
+  color: black;
+  font-style: normal;
+}
+</style>
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Bonus
+
+Find the mean and variance of the lognormal distribution.
+
+# Slide 18
+
+Suppose you buy a European call option written on asset paying no
+dividend, with strike price $K = 50$, $T = 0.5$ (year), $r = 0.05$. If it is sure
+that the asset price at expiry is $S_T = 60$. How much should be the fair
+value of the option?
+
+# Slide 19
+
+Suppose the stock price process follows a geometric Brownian motion:
+$$\,d S_t = 0.1 S_t \,d_t + 0.4 S_t \,dW_t$$
+
+where $W_t$ is the standard Brownian motion on the real world probability
+space, denoted by $(\omega, \mathcal{F},\mathcal{P})$.
+
+a. Using Ito’s formula to compute $d(e^{−0.02t}S_t)$.
+b. Let $\widetilde W_t = W_t + \theta t$, with $\theta$ is a constant. Find $\theta$ such that the
+discounted $(e^{−0.02t}S_t)_{t \ge 0}$ is a martingale process with respect to $\widetilde W_t$.
+c. Find the expression of $\,d S_t$in terms of $\,dt$ and $\,d \widetilde W_t$.
+
+# Slide 20
+
+Suppose the stock price process follows an arithmetic Brownian motion:$\,d S_t = 0.1 \,dt + 0.4 \,d W_t$,
+where $W_t$ is the standard Brownian motion on the real world probability space, denoted by $(\omega, \mathcal{F},\mathcal{P})$.
+
+a. Using Ito’s formula to compute $\,d (e^{−0.02t} S_t)$.
+b. Let $\widehat W_t = W_t + \int_0^t \theta_s \,d s$, with $(\theta_t)_{t \geq 0}$ is an adapted process with
+respect to the filter $\mathcal{F}$. Find $\theta$ such that the discounted $(e^{−0.02t} S_t)_{t \geq 0}$ is a
+martingale process with respect to $\widetilde W_t$.
+c. Find the expression of $\,d S_t$in terms of $\,dt$ and $\,d \widetilde W_t$.
+

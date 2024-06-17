@@ -1,0 +1,92 @@
+<style>
+
+body {
+  font-family: "Georgia";
+  text-align: justify;
+}
+
+p {
+  font-family: "Georgia";
+  text-indent: 30px;
+  color: black;
+  font-style: normal;
+}
+</style>
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+# Slide 46
+
+Let X be a normal random variable with mean 1 and variance 3 and
+$Y = e^X$.
+What is the probability density function of $X$?
+What is the probability density function of $Y$?
+
+# Slide 47
+
+Suppose the stochastic process of the asset price $S_t$ follows a geometric
+Brownian motion:
+
+$$dSt = 0.15St \,dt + 0.4 S_t \,dW_t^\mathcal{P}$$
+where $W_t^P$ is a standard Brownian motion on the real world probability
+space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European call option written on the stock
+with parameters: exercise price $K = 8$, maturity time $T > t$ (year), the
+risk-free interest rate is $r = 0.06$.
+
+1. Under the Black-Scholes framework, using the probabilistic approach to
+derive the formula in terms of $t,T$ and $S_t$ for the fair price of the option?
+2. Compute the fair price when $t = 0.5,T = 1, S_t = 10$.
+
+# Slide 48
+
+Suppose the stochastic process of the asset price St follows a geometric
+Brownian motion:
+$$\,d S_t = 0.1 S_t \,dt + 0.3 S_t \,dW_t^\mathcal{P}$$
+where $W_t^P$
+is a standard Brownian motion on the real world probability
+space, denoted by $(\omega, \mathcal{F},\mathcal{P})$. A European put option written on the stock
+with parameters: exercise price $K = 10$, maturity time $T > t$ (year), the
+risk-free interest rate is $r = 0.07$.
+
+1. Under the Black-Scholes framework, using the probabilistic approach to
+derive the formula in terms of $t,T$ and $S_t$ for the fair price of the option?
+2. Compute the fair price when $t = 0.5,T = 1, S_t = 11$.
+
+# Slide 49
+
+Let $$\begin{align*}
+d_1(S_t,t)&=\frac{\log S_t - \log K+\left(r-\delta+\frac{1}{2} \sigma^2\right)(T-t)}{\sigma \sqrt{T-t}} \\ 
+d_2(S_t,t)&=d_1(S_t,t)-\sigma \sqrt{T-t} \\
+N(x)&=\int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}y^2} \,dy \end{align*}$$
+Prove that
+
+a. $e^{-r(T-t)} \int_K^\infty \frac{1}{\sigma \sqrt{2\pi(T-t)}}e^{-\frac{(\log y -m)^2}{2\sigma^2(T-t)}} \,dy=S_t e^{-\delta(T-t)}N(d_1(S_t,t)$
+b. $e^{-r(T-t)} \int_K^\infty \frac{1}{y\sigma \sqrt{2\pi(T-t)}}e^{-\frac{(\log y -m)^2}{2\sigma^2(T-t)}} \,dy=K e^{-r(T-t)}N(d_2(S_t,t))$
+
+# Slide 50
+
+Let $$\begin{align*}
+d_1(S_t,t)&=\frac{\log S_t - \log K+\left(r-\delta+\frac{1}{2} \sigma^2\right)(T-t)}{\sigma \sqrt{T-t}} \\ 
+d_2(S_t,t)&=d_1(S_t,t)-\sigma \sqrt{T-t} \\
+N(x)&=\int_{-\infty}^{x} \frac{1}{\sqrt{2\pi}}e^{-\frac{1}{2}y^2} \,dy \end{align*}$$
+Prove that
+
+c. $e^{-r(T-t)} \int_0^K \frac{1}{\sigma \sqrt{2\pi(T-t)}}e^{-\frac{(\log y -m)^2}{2\sigma^2(T-t)}} \,dy=S_t e^{-\delta(T-t)}N(-d_1(S_t,t)$
+d. $e^{-r(T-t)} \int_0^K \frac{1}{y\sigma \sqrt{2\pi(T-t)}}e^{-\frac{(\log y -m)^2}{2\sigma^2(T-t)}} \,dy=K e^{-r(T-t)}N(-d_2(S_t,t))$
+
+# Slide 51
+
+Suppose each of 30 stocks in VN30 are governed by a geometric Brownian motion. Write a R code to find the corresponding parameters for each stock.
+
+# Slide 52
+
+An investor agreed to pay an amount $C_0$ to buy a European put option with the underlying VCB stock, which was priced at 56, 500 VND per share on 01/02/2019. This option entitles the investor a right, but not an obligation, to sell a VCB share with price 62,000 VND, at the end of the next 6 months. Suppose the risk-free interest rate is 8%.
+
+a. Write a R code to find the volatility of VCB stock price, using the historical price data over 5 years.
+b. Write a R code to estimate the parameters of the geometric Brownian motion governing the VCB price.
+c. According to the Black-Scholes framework and using the probabilistic approach, compute the fair value for $C_0$?
+d. Write a R code to compute $C_0$ using the Black-Scholes-Merton formula.
+e. Compare the obtained result with that of binomial pricing method.

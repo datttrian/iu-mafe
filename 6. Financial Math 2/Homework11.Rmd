@@ -1,0 +1,333 @@
+<style>
+
+body {
+  font-family: "Georgia";
+  text-align: justify;
+}
+
+p {
+  font-family: "Georgia";
+  text-indent: 30px;
+  color: black;
+  font-style: normal;
+}
+</style>
+
+```{r setup, include = FALSE}
+library(tidyverse)
+```
+
+# Slide 7
+
+Consider a European down-and-out call at time $t = 1$. The current stock price: $S_1 = 8$, the barrier: $B = 6$, strike price: $E = 7$, maturity time $T = 3$. What is the option payoff, given that $S_{1.5} = 9$, $S_2 = 7$, $S_{2.5} = 5.5$,  $S_3 = 7.5$.
+
+```{r, echo=F}
+plot(c(1,1.5,2,2.5,3),  
+     c(8,9,7,5.5,7.5),"l",
+     xlab="Time",
+     ylab="Price",)
+abline(h=6,col="red")
+```
+
+The payoff of this call option is $0$ since $S_{2.5} = 5.5$ stays below the barrier $B = 6$.
+
+# Slide 9
+
+Consider a European down-and-in call at time $t = 1$. The current stock price: $S_1 = 8$, the barrier: $B = 6$, strike price: $E = 7$, maturity time $T = 3$. What is the option payoff, given that $S_{1.5} = 7$, $S_2 = 6$, $S_{2.5} = 6.5$,   $S_3 = 7.5$.
+
+```{r, echo=F}
+plot(c(1,1.5,2,2.5,3),  
+     c(8,7,6,6.5,7.5),"l",
+     xlab="Time",
+     ylab="Price",)
+abline(h=6,col="red")
+```
+
+This down-and-in call becomes a vanilla call since the stock price $S_2 = 6$ touches the barrier $B = 6$ from above. The payoff of this call option is
+
+$$\begin{align*}
+V &= \max(S_3-E,0) \\
+&= \max(7.5-7,0) \\
+&=7.5
+\end{align*}$$
+ 
+# Slide 10
+
+Consider a stock with price follows a geometric Brownian motion: $$\,d S_t = 0.05 S_t \,dt + 0.2 S_t \,d W_t,$$
+where $(W_t)_{t \geq 0}$ is a standard Brownian motion with respect to the risk-neutral measure Q. A European down-and-out call option written on the stock with parameters: exercise price $K = 10$, time to maturity $T > t$ (year), the barrier is $B = 9$, the risk-free interest rate is $r = 0.05$, $t=0.5$, $T=1$,  $S_t =11$.
+
+```{r}
+build_stock_tree = function(S, sigma, delta_t, N) {
+  tree = matrix(0, nrow=N+1, ncol=N+1)
+  u = exp(sigma*sqrt(delta_t)) ### CRR model
+  d = exp(-sigma*sqrt(delta_t))
+  for (i in 1:(N+1)) { ## Each i denotes for the period i-1 
+    for (j in 1:i) { ## Each j denotes for the node j 
+      tree[i,j] = S * u^(j-1) * d^((i-1)-(j-1)) ###
+  }
+  }
+  return(tree)
+}
+
+### compute the risk-neutral probability
+  q_prob = function(r, delta_t, sigma) { ##delta_t: the time period, sigma: the volatility of the stock
+  u = exp(sigma*sqrt(delta_t)) ## up factor
+  d = exp(-sigma*sqrt(delta_t)) ## down factor
+  R=exp(r*delta_t) ## future factor
+  return((R - d)/(u-d))
+}
+### locial function with output 0 or 1
+logical <- function(x,a){
+for (i in 1: length(x)){if (x[i]>a) {x[i]=1} else x[i]=0}
+return (x)}
+
+### compute the price of European down and out call options
+value_binomial_option_down_out = function(tree, sigma, delta_t,
+r, X, B) {
+## X:the strike price, B: barrier
+q = q_prob(r, delta_t, sigma)
+option_tree = matrix(0, nrow=nrow(tree), ncol=ncol(tree))
+option_tree[nrow(option_tree),] =
+logical(tree[nrow(tree),],B)*pmax(tree[nrow(tree),] - X, 0)
+for (i in (nrow(tree)-1):1) {
+for(j in 1:i) {
+option_tree[i, j] = logical(tree[i,j],B)*
+((1-q)*option_tree[i+1,j] +
+q*option_tree[i+1,j+1])/exp(r*delta_t)}}
+return(option_tree)}
+
+### combine every thing
+binomial_option_down_out = function( sigma, T,t, r, X, B,S, N) {
+q = q_prob(r=r, delta_t=(T-t)/N, sigma=sigma)
+tree = build_stock_tree(S=S, sigma=sigma, delta_t=(T-t)/N, N=N)
+option = value_binomial_option_down_out(tree, sigma=sigma,
+delta_t=(T-t)/N, r=r, X=X, B=B)
+return(list(q=q, stock=tree, option=option, price=option[1,1]))
+}
+
+binom = binomial_option_down_out(sigma=0.2, 
+                         T=1, 
+                         t=0.5, 
+                         r=0.05,
+                         X=10, 
+                         B=9, 
+                         S=11, 
+                         N=4)
+```
+
+## Question 1
+
+Compute the option price using the 4-step binomial tree 
+
+>$$\begin{align*}
+u&=e^{\sigma \sqrt{\frac{T-t}{N}}} \\
+&=e^{0.2\sqrt{\frac{2-0.5}{4}}} \\
+&=1.07 \\
+d&=0.93 \\
+p &= \frac{e^{r \cdot \frac{T-t}{N}}-d}{u-d} \\
+&= \frac{e^{0.05 \cdot \frac{1-0.5}{4}}-0.93}{1.07-0.93} \\
+&=0.53 \\
+q &=0.47 \\
+\Delta &=\frac{T-t}{N} \\
+&= \frac{1-0.5}{4} \\
+&= 0.125
+\end{align*}$$
+
+>$$\begin{align*}
+S_{04} &= S_0 \cdot u^4 \\ 
+&= 11 \cdot 1.07^4 \\
+&= 14.42 \\
+S_{14} &= S_0 \cdot u^3d \\
+&= 11 \cdot 1.07^2 \\
+&= 12.59 \\
+S_{24} &= S_0 \cdot u^2d^2 \\
+&= 11 \cdot 1.07^0 \\
+&= 11.00 \\
+S_{34} &= S_0 \cdot ud^3 \\
+&= 11 \cdot 1.07^{-2} \\
+&= 9.61 \\
+S_{44} &= S_0 \cdot d^4 \\
+&= 11 \cdot 1.07^{-4} \\
+&= 8.39
+\end{align*}$$
+
+>$$\begin{align*}
+V_{04}&= \begin{cases}
+  \max(S_{04}-E,0)  & S_{04} \geq 9 \\
+  0 & S_{04} < 9
+\end{cases} \\
+&=\max(14.42-10,0) \\
+&= 4.42 \\
+V_{14}&= \begin{cases}
+  \max(S_{14}-E,0)  & S_{14} \geq 9 \\
+  0 & S_{14} < 9
+\end{cases} \\
+&=\max(12.59-10,0) \\
+&= 2.59 \\
+V_{24}&= \begin{cases}
+  \max(S_{24}-E,0)  & S_{24} \geq 9 \\
+  0 & S_{24} < 9
+\end{cases} \\
+&=\max(11.00-10,0) \\
+&= 1 \\
+V_{34}&= \begin{cases}
+  \max(S_{34}-E,0)  & S_{34} \geq 9 \\
+  0 & S_{34} < 9
+\end{cases} \\
+&=\max(9.61-10,0) \\
+&= 0 \\
+V_{44}&= \begin{cases}
+  \max(S_0 \cdot d^4-E,0)  & S_{44} \geq 9 \\
+  0 & S_{44} < 9
+\end{cases} \\
+&= 0 \\
+\end{align*}$$
+
+>$$\begin{align*}
+S_{03} &= S_0 \cdot u^3 \\ 
+&= 11 \cdot 1.07^3 \\
+&= 13.48 \\
+S_{13} &= S_0 \cdot u^2d \\
+&= 11 \cdot 1.07 \\
+&= 11.77 \\
+S_{23} &= S_0 \cdot ud^2 \\
+&= 11 \cdot 1.07^{-1} \\
+&= 10.28 \\
+S_{33} &= S_0 \cdot d^3 \\
+&= 11 \cdot 1.07^{-3} \\
+&= 8.98
+\end{align*}$$
+
+>$$\begin{align*}
+V_{03}&= \begin{cases}
+  e^{-r \cdot \Delta}(V_{04}\cdot p + V_{14}\cdot q)  & S_{03} \geq 9 \\
+  0 & S_{03} < 9
+\end{cases} \\
+&=e^{-0.05 \cdot 0.125}(4.42\cdot 0.53 + 2.59\cdot 0.47) \\
+&= 3.54 \\
+V_{13}&= \begin{cases}
+  e^{-r \cdot \Delta}(V_{14}\cdot p + V_{24}\cdot q)  & S_{13} \geq 9 \\
+  0 & S_{13} < 9
+\end{cases} \\
+&=e^{-0.05 \cdot 0.125}(2.59\cdot 0.53 + 1\cdot 0.47) \\
+&= 1.83 \\
+V_{23}&= \begin{cases}
+  e^{-r \cdot \Delta}(V_{24}\cdot p + V_{34}\cdot q)  & S_{23} \geq 9 \\
+  0 & S_{23} < 9
+\end{cases} \\
+&=e^{-0.05 \cdot 0.125}(1\cdot 0.53 + 0\cdot 0.47) \\
+&= 0.53 \\
+V_{33}&= \begin{cases}
+  e^{-r \cdot \Delta}(V_{34}\cdot p + V_{44}\cdot q)  & S_{33} \geq 9 \\
+  0 & S_{33} < 9
+\end{cases} \\
+&= 0 \\
+\end{align*}$$
+
+>$$\begin{align*}
+S_{02} &= S_0 \cdot u^2 \\ 
+&= 11 \cdot 1.07^2 \\
+&= 12.59 \\
+S_{12} &= S_0 \cdot ud \\
+&= 11 \cdot 1.07^0 \\
+&= 11.00 \\
+S_{22} &= S_0 \cdot d^2 \\
+&= 11 \cdot 1.07^{-2} \\
+&= 9.60
+\end{align*}$$
+
+>$$\begin{align*}
+V_{02}&= \begin{cases}
+  e^{-r \cdot \Delta}(V_{03}\cdot p + V_{13}\cdot q)  & S_{02} \geq 9 \\
+  0 & S_{02} < 9
+\end{cases} \\
+&=e^{-0.05 \cdot 0.125}(3.54\cdot 0.53 + 1.83\cdot 0.47) \\
+&= 2.72 \\
+V_{12}&= \begin{cases}
+  e^{-r \cdot \Delta}(V_{13}\cdot p + V_{23}\cdot q)  & S_{12} \geq 9 \\
+  0 & S_{12} < 9
+\end{cases} \\
+&=e^{-0.05 \cdot 0.125}(1.83\cdot 0.53 + 0.53\cdot 0.47) \\
+&= 1.21 \\
+V_{22}&= \begin{cases}
+  e^{-r \cdot \Delta}(V_{23}\cdot p + V_{33}\cdot q)  & S_{22} \geq 9 \\
+  0 & S_{22} < 9
+\end{cases} \\
+&=e^{-0.05 \cdot 0.125}(0.53\cdot 0.53 + 0\cdot 0.47) \\
+&= 0.28
+\end{align*}$$
+
+>$$\begin{align*}
+S_{01} &= S_0 \cdot u \\ 
+&= 11 \cdot 1.07 \\
+&= 11.77 \\
+S_{11} &= S_0 \cdot d \\
+&= 11 \cdot 1.07^{-1} \\
+&= 10.28
+\end{align*}$$
+
+>$$\begin{align*}
+V_{01}&= \begin{cases}
+  e^{-r \cdot \Delta}(V_{02}\cdot p + V_{12}\cdot q)  & S_{01} \geq 9 \\
+  0 & S_{01} < 9
+\end{cases} \\
+&=e^{-0.05 \cdot 0.125}(2.72\cdot 0.53 + 1.21\cdot 0.47) \\
+&= 2.00 \\
+V_{11}&= \begin{cases}
+  e^{-r \cdot \Delta}(V_{12}\cdot p + V_{22}\cdot q)  & S_{11} \geq 9 \\
+  0 & S_{11} < 9
+\end{cases} \\
+&=e^{-0.05 \cdot 0.125}(1.21\cdot 0.53 + 0.28\cdot 0.47) \\
+&= 0.77
+\end{align*}$$
+
+>$$\begin{align*}
+V_{0}&= \begin{cases}
+  e^{-r \cdot \Delta}(V_{01}\cdot p + V_{11}\cdot q)  & S_{0} \geq 9 \\
+  0 & S_{0} < 9
+\end{cases} \\
+&=e^{-0.05 \cdot 0.125}(2.00\cdot 0.53 + 0.77\cdot 0.47) \\
+&= 1.41
+\end{align*}$$
+
+```{r}
+binom$stock
+binom$option
+binom$price
+```
+
+>Answer: The fair price of the option is $1.41$
+
+## Question 2
+
+Compute the option price using the Monte Carlo simulation
+
+```{r}
+MC_down_out <- function(St , K,B,t , T , r , sigma ,M, N ){
+  dt=(T-t)/N
+  payoff=matrix(0,nrow=M,ncol=1)
+  S =matrix(0,nrow=M, ncol=N+1)
+  for (i in 1:M){
+  S[i,1] = St
+  for (j in 1:N){
+    S[i,j+1]=S[i,j]*exp((r-sigma^2/2)*dt+sigma*sqrt(dt)*rnorm(1,mean=0,sd=1))
+    if (S[i,j+1]<=B ){
+    break
+    }
+  }
+  payoff[i]=max(S[i,N+1]-K,0)}
+  price <- exp(-r * (T - t))*mean(payoff)
+  return(price)
+}
+
+MC_down_out(St=11, 
+            K=10, 
+            B=9, 
+            t=0.5, 
+            T=1, 
+            r=0.05,
+            sigma=0.2, 
+            M=10000, 
+            N=1000 )
+```
+
