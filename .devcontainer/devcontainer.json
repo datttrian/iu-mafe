@@ -1,0 +1,10 @@
+{
+	"customizations": {
+        "vscode": {
+            "extensions": [
+                "vsls-contrib.gitdoc",
+                "GitHub.copilot"
+            ]
+        }
+    }
+}
